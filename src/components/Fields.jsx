@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 
 import pencil from '../svg/sm-pencil.svg';
 import plus from '../svg/sm-plus.svg';
@@ -7,6 +7,8 @@ import x from '../svg/sm-x.svg';
 const Fields = ({ schema, setSchema }) => {
   const refName = useRef('');
   const refType = useRef('');
+
+  const [buttonText, setButtonText] = useState('Add Field');
 
   const schemaTypes = [
     'Boolean',
@@ -23,13 +25,34 @@ const Fields = ({ schema, setSchema }) => {
     return string.replace(/[^a-zA-Z ]/g, '');
   }
 
-  // Change 'camelCase' to 'Title Case'
-  function camelToTitle(string) {
+  function titleCaseWord(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  }
+
+  // Outputs 'camelCase'
+  function formatName(string) {
     const sanitized = sanitize(string);
     const result = sanitized.replace(/([A-Z])/g, ' $1');
-    const camelled = result.charAt(0).toUpperCase() + result.slice(1);
+
+    const pascalled = result
+      .split(' ')
+      .map(word => titleCaseWord(word))
+      .join('');
+
+    const camelled = pascalled.charAt(0).toLowerCase() + pascalled.slice(1);
 
     return camelled.trim();
+  }
+
+  // Outputs 'Title Case'
+  function formatTitle(string) {
+    const sanitized = sanitize(string);
+
+    // Uppercase words
+    return sanitized
+      .split(' ')
+      .map(word => titleCaseWord(word))
+      .join(' ');
   }
 
   function addField(e) {
@@ -40,14 +63,15 @@ const Fields = ({ schema, setSchema }) => {
     }
 
     const currentFields = schema;
+    const thisField = {
+      title: formatTitle(refName.current.value),
+      name: formatName(refName.current.value),
+      type: refType.current.value,
+    };
+
     const fieldIndex = schema.findIndex(
       field => field.name === refName.current.value
     );
-    const thisField = {
-      title: camelToTitle(refName.current.value),
-      name: sanitize(refName.current.value),
-      type: refType.current.value,
-    };
 
     // Update or add field
     fieldIndex >= 0
@@ -57,9 +81,11 @@ const Fields = ({ schema, setSchema }) => {
     setSchema([...currentFields]);
 
     refName.current.value = '';
+    setButtonText('Add Field');
   }
 
   function editField(name, type) {
+    setButtonText('Edit Field');
     refName.current.value = name;
     refType.current.value = type;
   }
@@ -76,9 +102,7 @@ const Fields = ({ schema, setSchema }) => {
       >
         <div className="flex">
           <label htmlFor="name">
-            <span className="text-xs font-bold mb-1 inline-block">
-              Name (camelCase)
-            </span>
+            <span className="text-xs font-bold mb-1 inline-block">Name</span>
             <br />
             <input
               name="name"
@@ -113,7 +137,7 @@ const Fields = ({ schema, setSchema }) => {
             src={plus}
             alt="Add Field"
           />
-          Add Field
+          {buttonText}
         </button>
       </form>
 
@@ -134,18 +158,18 @@ const Fields = ({ schema, setSchema }) => {
 
           <button
             type="button"
-            className="p-2 bg-orange-400 text-white rounded"
+            className="p-1 bg-orange-400 text-white rounded"
             onClick={() => editField(field.name, field.type)}
           >
-            <img className="w-5 h-auto text-white" src={pencil} alt="edit" />
+            <img className="w-4 h-auto text-white" src={pencil} alt="edit" />
           </button>
 
           <button
             type="button"
-            className="p-2 ml-1 bg-red-400 text-white rounded"
+            className="p-1 ml-1 bg-red-400 text-white rounded"
             onClick={() => deleteField(field.name)}
           >
-            <img className="w-5 h-auto text-white" src={x} alt="delete" />
+            <img className="w-4 h-auto text-white" src={x} alt="delete" />
           </button>
         </div>
       ))}
