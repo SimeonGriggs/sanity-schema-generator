@@ -23,6 +23,7 @@ const Fields = ({ schema, setSchema }) => {
     return string.replace(/[^a-zA-Z ]/g, '');
   }
 
+  // Change 'camelCase' to 'Title Case'
   function camelToTitle(string) {
     const sanitized = sanitize(string);
     const result = sanitized.replace(/([A-Z])/g, ' $1');
@@ -31,23 +32,31 @@ const Fields = ({ schema, setSchema }) => {
     return camelled.trim();
   }
 
-  function addField() {
+  function addField(e) {
+    e.preventDefault();
+
     if (!refType.current.value || !refName.current.value) {
       return null;
     }
 
-    if (!schema.find(field => field.name === refName.current.value)) {
-      setSchema([
-        ...schema,
-        {
-          title: camelToTitle(refName.current.value),
-          name: sanitize(refName.current.value),
-          type: refType.current.value,
-        },
-      ]);
+    const currentFields = schema;
+    const fieldIndex = schema.findIndex(
+      field => field.name === refName.current.value
+    );
+    const thisField = {
+      title: camelToTitle(refName.current.value),
+      name: sanitize(refName.current.value),
+      type: refType.current.value,
+    };
 
-      refName.current.value = '';
-    }
+    // Update or add field
+    fieldIndex >= 0
+      ? (currentFields[fieldIndex] = thisField)
+      : currentFields.push(thisField);
+
+    setSchema([...currentFields]);
+
+    refName.current.value = '';
   }
 
   function editField(name, type) {
@@ -61,7 +70,10 @@ const Fields = ({ schema, setSchema }) => {
 
   return (
     <section className="bg-gray-100 p-4 rounded-l-lg">
-      <div className="bg-white p-2 mb-2 rounded-md shadow border border-gray-100 shadow-sm">
+      <form
+        onSubmit={addField}
+        className="bg-white p-2 mb-2 rounded-md shadow border border-gray-100 shadow-sm"
+      >
         <div className="flex">
           <label htmlFor="name">
             <span className="text-xs font-bold mb-1 inline-block">
@@ -83,7 +95,9 @@ const Fields = ({ schema, setSchema }) => {
               ref={refType}
             >
               {schemaTypes.map(type => (
-                <option value={type.toLowerCase()}>{camelToTitle(type)}</option>
+                <option key={type.toLowerCase()} value={type.toLowerCase()}>
+                  {type}
+                </option>
               ))}
             </select>
           </label>
@@ -91,7 +105,7 @@ const Fields = ({ schema, setSchema }) => {
 
         <button
           type="button"
-          className="py-1 px-4 mt-1 w-full bg-green-400 text-white rounded flex items-center justify-center font-bold"
+          className="py-1 px-4 mt-1 w-full bg-green-400 focus:bg-green-600 hover:bg-green-600 transition-colors duration-200 text-white rounded flex items-center justify-center font-bold"
           onClick={addField}
         >
           <img
@@ -101,7 +115,7 @@ const Fields = ({ schema, setSchema }) => {
           />
           Add Field
         </button>
-      </div>
+      </form>
 
       {schema.map((field, index) => (
         <div
@@ -111,7 +125,11 @@ const Fields = ({ schema, setSchema }) => {
           <div className="flex-1">
             {field.title}
             <br />
-            <code className="text-xs">{field.type}</code>
+            <code className="text-xs">
+              {field.name}
+              {` `}
+              <span className="opacity-50">{field.type}</span>
+            </code>
           </div>
 
           <button
