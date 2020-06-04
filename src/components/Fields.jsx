@@ -54,7 +54,8 @@ const Fields = ({ schema, setSchema }) => {
     return sanitized
       .split(' ')
       .map(word => titleCaseWord(word))
-      .join(' ');
+      .join(' ')
+      .trim();
   }
 
   function addField(e) {
@@ -162,10 +163,10 @@ const Fields = ({ schema, setSchema }) => {
         </button>
       </form>
 
-      <section className="flex flex-col space-y-2">
+      <section className="flex flex-col">
         {schema.map((field, index) => (
           <div
-            className="flex justify-between items-center bg-gray-200 border border-gray-300 p-2 rounded-md"
+            className="flex justify-between items-center bg-gray-200 border border-gray-300 mt-2 p-2 rounded-md"
             key={index}
           >
             <div className="flex-1">
