@@ -1,11 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 
-import {
-  sanitize,
-  titleCaseWord,
-  formatName,
-  formatTitle,
-} from '../helpers/helpers.js';
+import { formatName, formatTitle, schemaTypes } from '../helpers/helpers.js';
 
 import plus from '../svg/sm-plus.svg';
 
@@ -16,46 +11,48 @@ const FieldAdd = ({
   schema,
   setSchema,
 }) => {
-  const refName = useRef(null);
-  const refType = useRef(null);
-
-  useEffect(() => {
-    if (refName.current && field) refName.current.value = field.name;
-    if (refType.current && field) refType.current.value = field.type;
-  });
-
+  const refName = useRef();
+  const refType = useRef();
+  const [name, setName] = useState(field ? field.name : '');
+  const [type, setType] = useState(
+    field ? field.type : schemaTypes[0].toLowerCase()
+  );
   const [buttonText, setButtonText] = useState(
     buttonMode === 'edit' ? 'Edit Field' : 'Add Field'
   );
 
-  const schemaTypes = [
-    'Boolean',
-    'Date',
-    'Datetime',
-    'Number',
-    'Slug',
-    'String',
-    'Text',
-    'URL',
-  ];
+  function handleChange(event) {
+    if (event.target.name === 'name') setName(event.target.value);
+    if (event.target.name === 'type') setType(event.target.value);
+  }
 
   function addField(e) {
     if (e) e.preventDefault();
 
-    if (!refType.current.value || !refName.current.value) {
+    if (!name || !type) {
       return null;
     }
 
-    const currentFieldAdd = schema;
+    const currentFieldAdd = [...schema]; // New array
     const thisField = {
-      title: formatTitle(refName.current.value),
-      name: formatName(refName.current.value),
-      type: refType.current.value,
+      title: formatTitle(name),
+      name: formatName(name),
+      type,
     };
+
+    // TODO: More on this
+    if (name === 'array') {
+      thisField.of = [];
+    }
+
+    // TODO: More on this
+    if (name === 'object') {
+      thisField.fields = [];
+    }
 
     // This will find and override any field with the same name
     const fieldIndex = schema.findIndex(
-      field => field.name.toLowerCase() === refName.current.value.toLowerCase()
+      findField => findField.name.toLowerCase() === name.toLowerCase()
     );
 
     // Update or add field
@@ -63,18 +60,18 @@ const FieldAdd = ({
       ? (currentFieldAdd[fieldIndex] = thisField)
       : currentFieldAdd.push(thisField);
 
-    setSchema([...currentFieldAdd]);
+    setSchema(currentFieldAdd);
 
-    refName.current.value = '';
+    // Re-set state
+    setName('');
 
-    if (!field) {
-      refName.current.focus();
-    }
+    // Re-focus input if FieldAdd was used
+    if (!field) refName.current.focus();
 
-    if (setEditorVisible) {
-      setEditorVisible(false);
-    }
+    // Hide field editor if used
+    if (setEditorVisible) setEditorVisible(false);
 
+    // Restore button text
     setButtonText('Add Field');
   }
 
@@ -100,8 +97,10 @@ const FieldAdd = ({
           <br />
           <input
             name="name"
-            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
             ref={refName}
+            value={name}
+            onChange={handleChange}
+            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
           />
         </label>
         <label htmlFor="type" className="w-2/5">
@@ -110,13 +109,18 @@ const FieldAdd = ({
           </span>
           <br />
           <select
-            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 ml-1 border rounded border-gray-500 w-full"
             name="type"
             ref={refType}
+            value={type}
+            onChange={handleChange}
+            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 ml-1 border rounded border-gray-500 w-full"
           >
-            {schemaTypes.map(type => (
-              <option key={type.toLowerCase()} value={type.toLowerCase()}>
-                {type}
+            {schemaTypes.map(schemaType => (
+              <option
+                key={schemaType.toLowerCase()}
+                value={schemaType.toLowerCase()}
+              >
+                {schemaType}
               </option>
             ))}
           </select>
@@ -124,15 +128,10 @@ const FieldAdd = ({
       </div>
 
       <button
-        type="button"
+        type="submit"
         className="py-2 px-4 mt-1 w-full bg-green-400 focus:bg-green-600 hover:bg-green-600 transition-colors duration-200 text-white rounded-b flex items-center justify-center font-bold"
-        onClick={addField}
       >
-        <img
-          className="w-5 h-auto mr-2 text-white"
-          src={plus}
-          alt="Add Field"
-        />
+        <img className="w-5 h-auto mr-2 text-white" src={plus} alt="" />
         {buttonText}
       </button>
     </form>

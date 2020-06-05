@@ -4,14 +4,7 @@ import FieldAdd from './FieldAdd.jsx';
 import ButtonSmall from './ButtonSmall.jsx';
 
 const FieldItem = ({ field, index, schema, setSchema }) => {
-  const [buttonText, setButtonText] = useState('Add Field');
   const [editorVisible, setEditorVisible] = useState(false);
-
-  // Edit field based on name
-  function editField(name, type) {
-    setEditorVisible(!editorVisible);
-    setButtonText('Edit Field');
-  }
 
   // Delete field based on name
   function deleteField(name) {
@@ -20,11 +13,11 @@ const FieldItem = ({ field, index, schema, setSchema }) => {
 
   // Shift field up/down the array
   function moveField(amount = 1) {
-    if (!index || !schema) return null;
+    if (!schema) return null;
 
+    const updatedSchema = [...schema]; // Spreading makes a *new* array
     const movingPosition = schema[index];
     const shiftedPosition = schema[index + amount];
-    const updatedSchema = [...schema]; // Spreading makes a *new* array
 
     updatedSchema[index + amount] = movingPosition;
     updatedSchema[index] = shiftedPosition;
@@ -61,7 +54,7 @@ const FieldItem = ({ field, index, schema, setSchema }) => {
           <ButtonSmall
             color="orange"
             icon="pencil"
-            onClick={() => editField(field.name, field.type)}
+            onClick={() => setEditorVisible(!editorVisible)}
           />
           <ButtonSmall
             color="red"

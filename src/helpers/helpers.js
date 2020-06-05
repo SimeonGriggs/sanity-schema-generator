@@ -34,3 +34,17 @@ export function formatTitle(string) {
     .join(' ')
     .trim();
 }
+
+export const schemaTypes = [
+  'Text',
+  'Array',
+  'Object',
+  'Boolean',
+  'Date',
+  'Datetime',
+  'Number',
+  'Image',
+  'Slug',
+  'String',
+  'URL',
+];
