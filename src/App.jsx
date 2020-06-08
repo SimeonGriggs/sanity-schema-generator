@@ -10,13 +10,16 @@ function App() {
   const [schema, setSchema] = useState([]);
 
   return (
-    <div className="px-4 md:px-8 text-gray-700">
-      <Header />
-      <main className="mb-6 flex">
-        <Fields schema={schema} setSchema={setSchema} />
-        <Output schema={schema} />
+    <div className="min-h-screen">
+      <Fields schema={schema} setSchema={setSchema} />
+      <main className="flex">
+        <div className="w-2/5 xl:w-1/3"></div>
+        <div className="flex-1 px-16">
+          <Header />
+          <Output schema={schema} />
+          <Footer />
+        </div>
       </main>
-      <Footer />
     </div>
   );
 }

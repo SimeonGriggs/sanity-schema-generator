@@ -3,9 +3,9 @@ import React from 'react';
 const Footer = () => (
   <>
     <article className="flex items-center my-12">
-      <div className="max-w-lg ml-auto text-center mx-auto">
+      <div className="max-w-sm ml-auto text-center mx-auto">
         <p className="pb-5">
-          A quick way to create basic
+          A quick way to begin scaffolding
           <a
             className="text-green-400"
             href="https://www.sanity.io/docs/schema-types"
@@ -13,8 +13,11 @@ const Footer = () => (
             {' '}
             Sanity Schema
           </a>
-          . This tool will only give you the basics. For validation, layout and
-          other rules please read the docs.
+          .
+        </p>
+        <p className="pb-5">
+          This tool will only give you the basics. For validation, layout and
+          other options please read the docs.
         </p>
 
         <p className="pb-5">

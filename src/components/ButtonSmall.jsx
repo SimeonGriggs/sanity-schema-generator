@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import PropTypes from 'prop-types';
 
 import pencil from '../svg/sm-pencil.svg';
 import x from '../svg/sm-x.svg';
@@ -11,7 +12,7 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
     red: 'bg-red-400 hover:bg-red-500',
     orange: 'bg-orange-400 hover:bg-orange-500',
     green: 'bg-green-400 hover:bg-green-500',
-    blue: 'bg-blue-400 hover:bg-blue-500',
+    blue: 'bg-gray-400 hover:bg-gray-500',
     gray: 'bg-gray-500 hover:bg-gray-600',
   };
 
@@ -26,15 +27,22 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
   return (
     <button
       type="button"
-      className={`transition-colors duration-200 p-1 text-white rounded w-6 h-6 ${
+      className={`transition-colors duration-200 flex justify-center items-center text-white rounded w-5 h-5 flex-shrink-0 ${
         colors[color]
       } ${disabled ? 'opacity-25 pointer-events-none' : ''}`}
       disabled={disabled}
       onClick={onClick}
     >
-      <img className="w-4 h-auto text-white" src={icons[icon]} alt="edit" />
+      <img className="w-3 h-auto text-white" src={icons[icon]} alt="edit" />
     </button>
   );
 };
 
 export default ButtonSmall;
+
+ButtonSmall.propTypes = {
+  onClick: PropTypes.func,
+  disabled: PropTypes.bool,
+  color: PropTypes.string,
+  icon: PropTypes.string,
+};
