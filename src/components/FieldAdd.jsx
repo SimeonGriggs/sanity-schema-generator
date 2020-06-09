@@ -73,12 +73,16 @@ const FieldAdd = ({
 
     // Adding new fields on the end of an array
     if (!parentId) {
-      const fieldIndex = currentSchema.findIndex(
-        findField => findField.id === field.id
-      );
+      if (field) {
+        const fieldIndex = currentSchema.findIndex(
+          findField => findField.id === field.id
+        );
 
-      if (fieldIndex >= 0) {
-        currentSchema[fieldIndex] = thisField;
+        if (fieldIndex >= 0) {
+          currentSchema[fieldIndex] = thisField;
+        } else {
+          currentSchema.push(thisField);
+        }
       } else {
         currentSchema.push(thisField);
       }
