@@ -95,8 +95,10 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
           {field.title}
           <br />
           <code className="text-xs">
-            <span className="text-gray-500">{field.name}</span>
-            <span className="pl-1 text-gray-400">{field.type}</span>
+            {field.name && (
+              <span className="text-gray-500 pr-1">{field.name}</span>
+            )}
+            {field.type && <span className="text-gray-400">{field.type}</span>}
           </code>
         </div>
 

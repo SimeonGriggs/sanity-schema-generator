@@ -59,7 +59,10 @@ const FieldAdd = ({
       type,
     };
 
-    if (type === 'array') thisField.of = children.length ? children : [];
+    if (type === 'array') {
+      delete thisField.name;
+      thisField.of = children.length ? children : [];
+    }
     if (type === 'object') thisField.fields = children.length ? children : [];
 
     return thisField;
