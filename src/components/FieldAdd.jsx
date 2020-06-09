@@ -73,7 +73,15 @@ const FieldAdd = ({
 
     // Adding new fields on the end of an array
     if (!parentId) {
-      currentSchema.push(thisField);
+      const fieldIndex = currentSchema.findIndex(
+        findField => findField.id === field.id
+      );
+
+      if (fieldIndex >= 0) {
+        currentSchema[fieldIndex] = thisField;
+      } else {
+        currentSchema.push(thisField);
+      }
     } else {
       // This will find and override any field with the same id
       // TODO: This no longer checks for unique `name`s
@@ -104,10 +112,7 @@ const FieldAdd = ({
 
     // Reset state
     setName('');
-
-    if (!parentId) {
-      setChildren([]);
-    }
+    if (!parentId) setChildren([]);
 
     // Re-focus input if not editing an existing field
     if (!field) refName.current.focus();
