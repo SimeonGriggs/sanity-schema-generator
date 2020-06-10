@@ -26,26 +26,28 @@ const FieldList = ({ schema, setSchema, hasParent, parentId }) => {
       `}
     >
       <AnimatePresence>
-        {children.map((field, index) => (
-          <motion.div
-            key={field.id}
-            initial={{ y: 10, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={{ y: -10, opacity: 0 }}
-            transition={{ duration: 0.1 }}
-            positionTransition
-          >
-            <FieldItem
-              schema={schema}
-              setSchema={setSchema}
+        {children
+          .filter(field => field.id)
+          .map((field, index) => (
+            <motion.div
               key={field.id}
-              index={index}
-              count={children.length}
-              field={field}
-              parentId={parentId}
-            />
-          </motion.div>
-        ))}
+              initial={{ y: 10, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -10, opacity: 0 }}
+              transition={{ duration: 0.1 }}
+              positionTransition
+            >
+              <FieldItem
+                schema={schema}
+                setSchema={setSchema}
+                key={field.id}
+                index={index}
+                count={children.length}
+                field={field}
+                parentId={parentId}
+              />
+            </motion.div>
+          ))}
       </AnimatePresence>
     </section>
   );

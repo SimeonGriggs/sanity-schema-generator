@@ -60,11 +60,11 @@ export function createId() {
   );
 }
 
-const traverse = function(o, id, newField, fn, scope = []) {
+const traverse = function(o, id, fieldMod, fn, scope = []) {
   for (const i in o) {
-    fn.apply(this, [i, id, newField, o[i], scope]);
+    fn.apply(this, [i, id, fieldMod, o[i], scope]);
     if (o[i] !== null && typeof o[i] === 'object') {
-      traverse(o[i], id, newField, fn, scope.concat(i));
+      traverse(o[i], id, fieldMod, fn, scope.concat(i));
     }
   }
 };
@@ -73,26 +73,56 @@ const traverse = function(o, id, newField, fn, scope = []) {
  * Find (and maybe replace) a field based by its ID
  * @param {Array} schema Array of fields, possibly nested
  * @param {string} id The ID of the field we're looking for and return the field
- * @param {Object} newField Optional, replace the field and return the entire modified schema
+ * @param {Object} fieldMod Optional, replace the field and return the entire modified schema
  */
-export function findFieldById(schema, id, newField = false) {
+export function findFieldById(schema, id, fieldMod = false) {
   let findField = false;
 
-  traverse(schema, id, newField, (key, id, newField, value, scope) => {
+  traverse(schema, id, fieldMod, (key, id, fieldMod, value, scope) => {
     if (key !== 'id') return;
 
-    if (value === id) {
-      // Is `eval` bad? Probably.
-      // Scope is a growing list array of keys that contain the position of our field in the original array
-      // TODO: Can nested array keys be referenced dynamically?
+    // Is `eval` bad? Probably.
+    // Scope is a growing list array of keys that contain the position of our field in the original array
+    // TODO: Can nested array keys be referenced dynamically?
+
+    // !findField prevents this from running more than once
+    if (value === id && !findField) {
       const scopeString = `schema[${scope
         .concat()
         .map(k => (isNaN(k) ? `'${k}'` : k))
         .join('][')}]`;
 
-      if (newField) {
+      if (fieldMod) {
         // Replace whole field
-        eval(`${scopeString} = newField`);
+        if (fieldMod === 'delete') {
+          const fieldIndex = scope.pop();
+          const scopeParentString = `schema[${scope
+            .concat()
+            .map(k => (isNaN(k) ? `'${k}'` : k))
+            .join('][')}]`;
+
+          eval(`${scopeParentString}.splice(${fieldIndex}, 1)`);
+        } else if (typeof fieldMod === 'number') {
+          // Re-order array this field belongs to
+          const index = parseInt(scope.pop());
+
+          // Get the array this field is in
+          const scopeParentString = `schema[${scope
+            .concat()
+            .map(k => (isNaN(k) ? `'${k}'` : k))
+            .join('][')}]`;
+          const currentArray = eval(`${scopeParentString}`);
+
+          // Get the fields in the current and moving-to indexes
+          const movingPosition = currentArray[index];
+          const shiftedPosition = currentArray[index + fieldMod];
+
+          currentArray[index + fieldMod] = movingPosition;
+          currentArray[index] = shiftedPosition;
+        } else {
+          // Replace whole field
+          eval(`${scopeString} = fieldMod`);
+        }
         findField = true;
       } else {
         // Return field
@@ -101,6 +131,6 @@ export function findFieldById(schema, id, newField = false) {
     }
   });
 
-  if (findField && newField) return schema;
+  if (findField && fieldMod) return schema;
   if (findField) return findField;
 }

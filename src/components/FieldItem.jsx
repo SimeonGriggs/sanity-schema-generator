@@ -5,6 +5,8 @@ import FieldAdd from './FieldAdd.jsx';
 import FieldList from './FieldList.jsx';
 import ButtonSmall from './ButtonSmall.jsx';
 
+import { findFieldById } from '../helpers/helpers.js';
+
 const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
   const [editorVisible, setEditorVisible] = useState(false);
   const children = field.of || field.fields || false;
@@ -15,74 +17,32 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
       // Fast delete top-level field
       setSchema(schema.filter(schemaField => schemaField.id !== id));
     } else {
+      // Search and delete deep field
       let currentSchema = [...schema];
+      currentSchema = findFieldById(currentSchema, id, 'delete');
 
-      // TODO: Replace this with a walker which will look down the tree
-      // Currently this won't remove from deep nested arrays/objects
-      const idIndex = currentSchema.findIndex(
-        currentField => currentField.id === parentId
-      );
-
-      if (idIndex >= 0) {
-        // In the field list we're modifying the entire list of fields in the schema
-        if (currentSchema[idIndex].type === 'array') {
-          currentSchema[idIndex].of = currentSchema[idIndex].of.filter(
-            child => child.id !== id
-          );
-        } else if (currentSchema[idIndex].type === 'object') {
-          currentSchema[idIndex].fields = currentSchema[idIndex].fields.filter(
-            child => child.id !== id
-          );
-        }
-
-        // But in FieldAdd we're only modifying the local array of children
-        else if (currentSchema[idIndex]) {
-          currentSchema = currentSchema.filter(child => child.id !== id);
-        }
-      }
-
-      // Set schema
       setSchema(currentSchema);
     }
   }
 
   // Shift field up/down the array
-  function moveField(amount = 1) {
-    if (!schema) return null;
+  function moveField(id, amount) {
+    if (!schema || !id) return null;
 
-    const updatedSchema = [...schema]; // Spreading makes a *new* array
+    let updatedSchema = [...schema]; // Spreading makes a *new* array
 
     if (!parentId) {
+      // Fast move top-level field
       const movingPosition = schema[index];
       const shiftedPosition = schema[index + amount];
 
       updatedSchema[index + amount] = movingPosition;
       updatedSchema[index] = shiftedPosition;
+    } else if (id && amount) {
+      // Search and move deep field
+      updatedSchema = findFieldById(updatedSchema, id, amount);
     } else {
-      const idIndex = updatedSchema.findIndex(
-        currentField => currentField.id === parentId
-      );
-
-      // In the field list we're modifying the entire list of fields in the schema
-      if (updatedSchema[idIndex].type === 'array') {
-        const movingPosition = updatedSchema[idIndex].of[index];
-        const shiftedPosition = updatedSchema[idIndex].of[index + amount];
-        updatedSchema[idIndex].of[index + amount] = movingPosition;
-        updatedSchema[idIndex].of[index] = shiftedPosition;
-      } else if (updatedSchema[idIndex].type === 'object') {
-        const movingPosition = updatedSchema[idIndex].fields[index];
-        const shiftedPosition = updatedSchema[idIndex].fields[index + amount];
-        updatedSchema[idIndex].fields[index + amount] = movingPosition;
-        updatedSchema[idIndex].fields[index] = shiftedPosition;
-      }
-
-      // But in FieldAdd we're only modifying the local array of children
-      else if (updatedSchema[idIndex]) {
-        const movingPosition = updatedSchema[index];
-        const shiftedPosition = updatedSchema[index + amount];
-        updatedSchema[index + amount] = movingPosition;
-        updatedSchema[index] = shiftedPosition;
-      }
+      console.error('No ID or Parent ID');
     }
 
     setSchema(updatedSchema);
@@ -107,7 +67,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
             color="gray"
             icon="cheveronUp"
             disabled={index === 0}
-            onClick={() => moveField(-1)}
+            onClick={() => moveField(field.id, -1)}
           />
           <ButtonSmall
             color="gray"
@@ -115,7 +75,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
             disabled={
               count ? index === count - 1 : index === schema?.length - 1
             }
-            onClick={() => moveField(1)}
+            onClick={() => moveField(field.id, 1)}
           />
           <ButtonSmall
             color={editorVisible ? `green` : `orange`}
