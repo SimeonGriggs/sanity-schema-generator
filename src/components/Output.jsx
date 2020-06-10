@@ -16,7 +16,7 @@ const Output = ({ schema }) => {
 
   // Remove the 'id' key from output
   function replacer(key, value) {
-    if (key === 'Zid') return undefined;
+    if (key === 'id') return undefined;
 
     return value;
   }
