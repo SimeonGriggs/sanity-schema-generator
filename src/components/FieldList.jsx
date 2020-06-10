@@ -3,13 +3,20 @@ import PropTypes from 'prop-types';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import FieldItem from './FieldItem.jsx';
+import { findFieldById } from '../helpers/helpers.js';
 
 const FieldList = ({ schema, setSchema, hasParent, parentId }) => {
-  const idIndex = schema.findIndex(
-    currentField => currentField.id === parentId
-  );
+  const parentField = parentId ? findFieldById(schema, parentId) : false;
 
-  const children = parentId ? schema[idIndex].of : schema;
+  let children = [];
+
+  if (!parentId) {
+    children = schema;
+  } else if (parentField && parentField.type === 'array') {
+    children = parentField.of;
+  } else if (parentField && parentField.type === 'object') {
+    children = parentField.fields;
+  }
 
   return (
     <section

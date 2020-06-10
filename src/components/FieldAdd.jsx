@@ -5,6 +5,7 @@ import FieldList from './FieldList.jsx';
 import Label from './Label.jsx';
 
 import {
+  findFieldById,
   formatName,
   formatTitle,
   schemaTypes,
@@ -53,7 +54,7 @@ const FieldAdd = ({
 
   function getThisField() {
     const thisField = {
-      id: createId(),
+      id: id || createId(),
       title: formatTitle(name),
       name: formatName(name),
       type,
@@ -71,12 +72,13 @@ const FieldAdd = ({
   function addOrEditField(fieldId = false) {
     if (!name || !type || !schema) return null;
 
-    const currentSchema = [...schema]; // New array
+    let currentSchema = [...schema]; // New array
     const thisField = getThisField();
 
     // Adding new fields on the end of an array
     if (!parentId) {
       if (field) {
+        // Editing an existing field
         const fieldIndex = currentSchema.findIndex(
           findField => findField.id === field.id
         );
@@ -84,34 +86,20 @@ const FieldAdd = ({
         if (fieldIndex >= 0) {
           currentSchema[fieldIndex] = thisField;
         } else {
+          // This should not be possible?
           currentSchema.push(thisField);
         }
       } else {
+        // Writing a new field
         currentSchema.push(thisField);
       }
-    } else {
+    } else if (id) {
       // This will find and override any field with the same id
       // TODO: This no longer checks for unique `name`s
-      const parentIndex = currentSchema.findIndex(
-        findField => findField.id === parentId
-      );
-
-      // Update or add field
-      if (parentIndex >= 0) {
-        if (currentSchema[parentIndex].type === 'array') {
-          const fieldIndex = currentSchema[parentIndex].of.findIndex(
-            findField => findField.id === field.id
-          );
-          currentSchema[parentIndex].of[fieldIndex] = thisField;
-        } else if (currentSchema[parentIndex].type === 'object') {
-          const fieldIndex = currentSchema[parentIndex].fields.findIndex(
-            findField => findField.id === field.id
-          );
-          currentSchema[parentIndex].fields[fieldIndex] = thisField;
-        }
-      } else {
-        currentSchema.push(thisField);
-      }
+      currentSchema = findFieldById(currentSchema, id, thisField);
+    } else {
+      // Tack this new field on the end
+      currentSchema.push(thisField);
     }
 
     // Write it!
@@ -213,7 +201,11 @@ const FieldAdd = ({
         <button
           onClick={handleSubmit}
           type="button"
-          className="py-2 px-4 w-full rounded-b border border-green-300 bg-green-200 text-green-600 focus:bg-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white transition-colors duration-200  flex items-center justify-center font-bold text-sm"
+          className={`py-2 px-4 w-full rounded-b border transition-colors duration-200 flex items-center justify-center font-bold text-sm ${
+            name
+              ? `border-green-300 bg-green-200 text-green-600 focus:bg-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white`
+              : `border-gray-300 bg-gray-200 text-gray-400 pointer-events-none`
+          }`}
         >
           {buttonText}
           {` `}

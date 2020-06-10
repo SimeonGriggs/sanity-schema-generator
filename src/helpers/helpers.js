@@ -59,3 +59,48 @@ export function createId() {
       .substring(2, 15)
   );
 }
+
+const traverse = function(o, id, newField, fn, scope = []) {
+  for (const i in o) {
+    fn.apply(this, [i, id, newField, o[i], scope]);
+    if (o[i] !== null && typeof o[i] === 'object') {
+      traverse(o[i], id, newField, fn, scope.concat(i));
+    }
+  }
+};
+
+/**
+ * Find (and maybe replace) a field based by its ID
+ * @param {Array} schema Array of fields, possibly nested
+ * @param {string} id The ID of the field we're looking for and return the field
+ * @param {Object} newField Optional, replace the field and return the entire modified schema
+ */
+export function findFieldById(schema, id, newField = false) {
+  let findField = false;
+
+  traverse(schema, id, newField, (key, id, newField, value, scope) => {
+    if (key !== 'id') return;
+
+    if (value === id) {
+      // Is `eval` bad? Probably.
+      // Scope is a growing list array of keys that contain the position of our field in the original array
+      // TODO: Can nested array keys be referenced dynamically?
+      const scopeString = `schema[${scope
+        .concat()
+        .map(k => (isNaN(k) ? `'${k}'` : k))
+        .join('][')}]`;
+
+      if (newField) {
+        // Replace whole field
+        eval(`${scopeString} = newField`);
+        findField = true;
+      } else {
+        // Return field
+        findField = eval(scopeString);
+      }
+    }
+  });
+
+  if (findField && newField) return schema;
+  if (findField) return findField;
+}
