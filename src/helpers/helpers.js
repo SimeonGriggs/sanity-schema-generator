@@ -35,21 +35,6 @@ export function formatTitle(string) {
     .trim();
 }
 
-export const schemaTypes = [
-  'Text',
-  'Block',
-  'Boolean',
-  'Date',
-  'Datetime',
-  'Array',
-  'Object',
-  'Number',
-  'Image',
-  'Slug',
-  'String',
-  'URL',
-];
-
 export function createId() {
   return (
     Math.random()

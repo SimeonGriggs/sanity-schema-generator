@@ -13,11 +13,11 @@ import sortDescending from '../svg/sm-sort-descending.svg';
 
 const ButtonSmall = ({ onClick, disabled, color, icon }) => {
   const colors = {
-    red: 'bg-red-400 hover:bg-red-500',
-    orange: 'bg-orange-400 hover:bg-orange-500',
-    green: 'bg-green-400 hover:bg-green-500',
-    blue: 'bg-gray-400 hover:bg-gray-500',
-    gray: 'bg-gray-500 hover:bg-gray-600',
+    red: 'bg-red-400 hover:bg-red-500 focus:bg-red-500',
+    orange: 'bg-orange-400 hover:bg-orange-500 focus:bg-orange-500',
+    green: 'bg-green-400 hover:bg-green-500 focus:bg-green-500',
+    blue: 'bg-gray-400 hover:bg-gray-500 focus:bg-gray-500',
+    gray: 'bg-gray-500 hover:bg-gray-700 focus:bg-gray-700',
   };
 
   const icons = {
@@ -35,7 +35,7 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
   return (
     <button
       type="button"
-      className={`transition-colors duration-200 flex justify-center items-center text-white rounded-sm w-5 h-5 flex-shrink-0 ${
+      className={`transition-colors duration-200 flex justify-center items-center text-white rounded-sm w-5 h-5 flex-shrink-0 focus:outline-none ${
         colors[color]
       } ${disabled ? 'opacity-25 pointer-events-none' : ''}`}
       disabled={disabled}

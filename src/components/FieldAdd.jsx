@@ -9,10 +9,10 @@ import {
   findFieldById,
   formatName,
   formatTitle,
-  schemaTypes,
   titleCaseWord,
   createId,
 } from '../helpers/helpers.js';
+import { schemaTypes } from '../helpers/schemaTypes.js';
 
 import plus from '../svg/sm-plus.svg';
 
@@ -27,13 +27,15 @@ const FieldAdd = ({
   // Refs used to re-set values or handle keypresses
   const refName = useRef();
   const refType = useRef();
-  const refRows = useRef();
+
+  // TODO: Make this dynamic with schema options
+  const refOptions = useRef([]);
 
   const [children, setChildren] = useState([]);
   const [id, setId] = useState(field ? field.id : false);
   const [name, setName] = useState(field ? field.title : ''); // That's confusing :/
   const [type, setType] = useState(
-    field ? field.type : schemaTypes[0].toLowerCase()
+    field ? field.type : Object.keys(schemaTypes)[0].toLowerCase()
   );
   const [options, setOptions] = useState({});
   const [optionsVisible, setOptionsVisible] = useState(false);
@@ -43,13 +45,33 @@ const FieldAdd = ({
 
   // Set options for passed-in field
   useEffect(() => {
-    if (!options.rows && field && field.type === 'text') {
-      setOptions({
-        ...options,
-        rows: field.rows,
-      });
+    // Field is not set
+    if (!field) return;
+
+    // This field type does not have options
+    if (!schemaTypes[type].options) return;
+
+    // Field options have already been passed in
+    // OR This field has options, but they're not the options of the current type
+    if (Object.keys(options).length) {
+      const currentOptions = Object.keys(options).filter(
+        key => schemaTypes[type].options[key]
+      );
+
+      if (!currentOptions.length) setOptions({});
+
+      return;
     }
-  }, [field, options]);
+
+    // Find the option keys this field *could* have and pass them in
+    const fieldOptions = {};
+
+    Object.keys(schemaTypes[type].options).forEach(option => {
+      fieldOptions[option] = field[option];
+    });
+
+    setOptions(fieldOptions);
+  }, [field, options, type]);
 
   // Set children for passed-in field
   useEffect(() => {
@@ -63,10 +85,29 @@ const FieldAdd = ({
   }, [field, children.length]);
 
   function handleChange(event) {
-    if (event.target.name === 'name') setName(event.target.value);
-    if (event.target.name === 'type') setType(event.target.value);
-    if (event.target.name === 'rows') {
-      setOptions({ ...options, rows: parseInt(event.target.value) });
+    const { value } = event.target;
+    const inputName = event.target.name;
+
+    if (inputName === 'name') {
+      setName(value);
+      return;
+    }
+
+    if (inputName === 'type') {
+      setType(value);
+      return;
+    }
+
+    if (schemaTypes[type].options[inputName]) {
+      const fieldOptions = { ...options };
+
+      if (schemaTypes[type].options[inputName] === 'number') {
+        fieldOptions[inputName] = parseInt(value);
+      } else {
+        fieldOptions[inputName] = value;
+      }
+
+      setOptions(fieldOptions);
     }
   }
 
@@ -76,22 +117,20 @@ const FieldAdd = ({
       title: formatTitle(name),
       name: formatName(name),
       type,
+      ...options,
     };
-
-    if (type === 'text' && options.rows) {
-      thisField.rows = options.rows;
-    }
 
     if (type === 'array') {
       delete thisField.name;
       thisField.of = children.length ? children : [];
     }
+
     if (type === 'object') thisField.fields = children.length ? children : [];
 
     return thisField;
   }
 
-  function addOrEditField(fieldId = false) {
+  function addOrEditField() {
     if (!name || !type || !schema) return null;
 
     let currentSchema = [...schema]; // New array
@@ -116,7 +155,6 @@ const FieldAdd = ({
         currentSchema.push(thisField);
       }
     } else if (id) {
-      // This will find and override any field with the same id
       // TODO: This no longer checks for unique `name`s
       currentSchema = findFieldById(currentSchema, id, thisField);
     } else {
@@ -141,14 +179,14 @@ const FieldAdd = ({
   }
 
   // Just incase this needs to be a different function later?
-  function addChild(fieldId) {
-    addOrEditField(fieldId);
+  function addChild() {
+    addOrEditField();
   }
 
   function handleSubmit(e) {
     if (e) e.preventDefault();
 
-    parentId ? addChild(id) : addOrEditField(id);
+    parentId ? addChild() : addOrEditField();
   }
 
   // Handle 'enter' key on dropdown
@@ -173,7 +211,7 @@ const FieldAdd = ({
         }`}
       >
         <label htmlFor="name" className="w-3/5">
-          <Label>Name</Label>
+          <Label>name</Label>
           <input
             name="name"
             ref={refName}
@@ -183,7 +221,7 @@ const FieldAdd = ({
           />
         </label>
         <label htmlFor="type" className="flex-1 pl-2">
-          <Label>Type</Label>
+          <Label>type</Label>
           <select
             name="type"
             ref={refType}
@@ -191,12 +229,9 @@ const FieldAdd = ({
             onChange={handleChange}
             className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
           >
-            {schemaTypes.map(schemaType => (
-              <option
-                key={schemaType.toLowerCase()}
-                value={schemaType.toLowerCase()}
-              >
-                {schemaType}
+            {Object.keys(schemaTypes).map(schemaType => (
+              <option key={schemaType} value={schemaType}>
+                {schemaTypes[schemaType].title}
               </option>
             ))}
           </select>
@@ -204,7 +239,7 @@ const FieldAdd = ({
 
         <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
           <ButtonSmall
-            disabled={type !== 'text'}
+            disabled={!schemaTypes[type].options}
             color={optionsVisible ? `green` : `gray`}
             icon={optionsVisible ? `sortAscending` : `sortDescending`}
             onClick={() => setOptionsVisible(!optionsVisible)}
@@ -212,23 +247,27 @@ const FieldAdd = ({
         </div>
       </div>
 
-      {optionsVisible && (
-        <>
-          {type === 'text' && (
-            <div className="flex flex-col px-4 pb-2">
-              <Label>Rows</Label>
-              <input
-                name="rows"
-                type="number"
-                ref={refRows}
-                value={options.rows || undefined}
-                onChange={handleChange}
-                className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
-              />
-            </div>
-          )}
-        </>
-      )}
+      {optionsVisible &&
+        schemaTypes[type].options &&
+        Object.keys(schemaTypes[type].options).map((option, index) => (
+          <div
+            key={option}
+            className={`flex flex-col pb-2
+            ${parentId ? `px-2` : `px-4`}
+            ${index === 0 ? `pt-1 border-t border-gray-200 ` : ``}
+             `}
+          >
+            <Label>{option}</Label>
+            <input
+              name={option}
+              type={schemaTypes[type].options[option]}
+              ref={refOptions[index]}
+              value={options[option] || ''}
+              onChange={handleChange}
+              className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+            />
+          </div>
+        ))}
 
       {(type === 'array' || type === 'object') && name && (
         <div
@@ -236,7 +275,7 @@ const FieldAdd = ({
             children.length > 0 ? `pb-0` : ``
           } bg-gray-100 border border-b-0 border-gray-200`}
         >
-          <Label className="px-2">{titleCaseWord(type)} Fields</Label>
+          <Label className="px-2">{type} fields</Label>
           <FieldAdd
             schema={children}
             setSchema={setChildren}
@@ -254,13 +293,13 @@ const FieldAdd = ({
           type="button"
           className={`py-2 px-4 w-full rounded-b border transition-colors duration-200 flex items-center justify-center font-bold text-sm ${
             name
-              ? `border-green-300 bg-green-200 text-green-600 focus:bg-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white`
+              ? `border-green-300 bg-green-200 text-green-600 focus:bg-green-600 focus:text-white focus:outline-none hover:border-green-600 hover:bg-green-600 hover:text-white`
               : `border-gray-300 bg-gray-200 text-gray-400 pointer-events-none`
           }`}
         >
           {buttonText}
           {` `}
-          {titleCaseWord(type)} Field
+          {schemaTypes[type].title} Field
         </button>
       )}
 
@@ -272,7 +311,7 @@ const FieldAdd = ({
           <img className="w-5 h-auto mr-2 text-white" src={plus} alt="" />
           {buttonText}
           {` `}
-          {titleCaseWord(type)} Field
+          {schemaTypes[type].title} Field
         </button>
       )}
     </form>

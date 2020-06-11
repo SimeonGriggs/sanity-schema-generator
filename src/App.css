@@ -2,16 +2,6 @@
 
 @tailwind components;
 
-/* * {
-  outline: 1px solid rgba(255, 0, 0, 0.1);
-}
-* * {
-  outline: 1px solid rgba(255, 0, 0, 0.1);
-}
-* * * {
-  outline: 1px solid rgba(255, 0, 0, 0.1);
-} */
-
 body {
   @apply bg-gray-900 text-gray-100;
 }
