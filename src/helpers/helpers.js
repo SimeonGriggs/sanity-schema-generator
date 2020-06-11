@@ -74,7 +74,9 @@ const traverse = function(o, id, fieldMod, fn, scope = []) {
  * Find (and maybe replace) a field based by its ID
  * @param {Array} schema Array of fields, possibly nested
  * @param {string} id The ID of the field we're looking for and return the field
- * @param {Object} fieldMod Optional, replace the field and return the entire modified schema
+ * @param {(boolean|string|number|object)} fieldMod Optional, replace the field and return the entire modified schema
+ *
+ * traverse() based on https://gist.github.com/sphvn/dcdf9d683458f879f593
  */
 export function findFieldById(schema, id, fieldMod = false) {
   let findField = false;

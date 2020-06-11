@@ -11,6 +11,7 @@ const History = ({ schema, setSchema }) => {
     if (history[id]) {
       setSchema(history[id]);
       setHistoryId(id);
+      setTimeout(() => setHistoryId(''), 200);
     }
   }
 
@@ -18,12 +19,15 @@ const History = ({ schema, setSchema }) => {
     if (!history[historyId]) {
       const allHistory = history;
       allHistory[createId()] = schema;
+      if (Object.keys(allHistory).length > 10) {
+        delete allHistory[Object.keys(allHistory)[0]];
+      }
       setHistory(allHistory);
     }
   }, [history, historyId, schema]);
 
   return (
-    <div className="bg-purple-500 fixed z-50 right-0 divide-y divide-purple-600 text-xs font-bold text-white flex flex-col items-start rounded-bl-lg shadow">
+    <div className="bg-purple-500 fixed z-50 right-0 bottom-0 divide-y divide-purple-600 text-xs font-bold text-white flex flex-col items-start rounded-tl-lg">
       {history &&
         Object.keys(history).map((id, index) => (
           <button

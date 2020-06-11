@@ -44,7 +44,10 @@ const FieldAdd = ({
   // Set options for passed-in field
   useEffect(() => {
     if (!options.rows && field && field.type === 'text') {
-      setOptions({ ...options, rows: field.rows });
+      setOptions({
+        ...options,
+        rows: field.rows,
+      });
     }
   }, [field, options]);
 
@@ -62,8 +65,9 @@ const FieldAdd = ({
   function handleChange(event) {
     if (event.target.name === 'name') setName(event.target.value);
     if (event.target.name === 'type') setType(event.target.value);
-    if (event.target.name === 'rows')
+    if (event.target.name === 'rows') {
       setOptions({ ...options, rows: parseInt(event.target.value) });
+    }
   }
 
   function getThisField() {
@@ -74,8 +78,8 @@ const FieldAdd = ({
       type,
     };
 
-    if (type === 'text' && refRows?.current?.value) {
-      thisField.rows = parseInt(refRows.current.value);
+    if (type === 'text' && options.rows) {
+      thisField.rows = options.rows;
     }
 
     if (type === 'array') {
@@ -132,6 +136,8 @@ const FieldAdd = ({
 
     // Hide field editor if used
     if (setEditorVisible) setEditorVisible(false);
+    if (optionsVisible) setOptionsVisible(false);
+    setOptions({});
   }
 
   // Just incase this needs to be a different function later?
@@ -215,7 +221,7 @@ const FieldAdd = ({
                 name="rows"
                 type="number"
                 ref={refRows}
-                value={options ? options.rows : 0}
+                value={options.rows || undefined}
                 onChange={handleChange}
                 className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
               />
