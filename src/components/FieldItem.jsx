@@ -84,7 +84,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
           />
           <ButtonSmall
             color="red"
-            icon="x"
+            icon="trash"
             onClick={() => deleteField(field.id)}
           />
         </div>

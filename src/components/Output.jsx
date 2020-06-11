@@ -46,19 +46,27 @@ const Output = ({ schema }) => {
         <ButtonSmall
           onClick={() => copyToClipboard()}
           color="green"
-          icon="documentDuplicate"
+          icon="clipboardCopy"
         />
       </div>
 
       <pre className="text-xs">
-        export default {JSON.stringify(complete, replacer, '  ')}
+        export default{' '}
+        {JSON.stringify(complete, replacer, '  ').replace(
+          /"(\w+)"\s*:/g,
+          '$1:'
+        )}
       </pre>
 
       <form className="absolute opacity-0 pointer-events-none">
         <textarea
           readOnly
           ref={refTextarea}
-          value={`export default ${JSON.stringify(complete, replacer, '  ')}`}
+          value={`export default ${JSON.stringify(
+            complete,
+            replacer,
+            '  '
+          ).replace(/"(\w+)"\s*:/g, '$1:')}`}
         />
       </form>
     </section>

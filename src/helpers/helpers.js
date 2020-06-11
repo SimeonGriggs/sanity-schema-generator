@@ -37,11 +37,12 @@ export function formatTitle(string) {
 
 export const schemaTypes = [
   'Text',
-  'Array',
-  'Object',
+  'Block',
   'Boolean',
   'Date',
   'Datetime',
+  'Array',
+  'Object',
   'Number',
   'Image',
   'Slug',

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import FieldList from './FieldList.jsx';
 import Label from './Label.jsx';
+import ButtonSmall from './ButtonSmall.jsx';
 
 import {
   findFieldById,
@@ -26,6 +27,7 @@ const FieldAdd = ({
   // Refs used to re-set values or handle keypresses
   const refName = useRef();
   const refType = useRef();
+  const refRows = useRef();
 
   const [children, setChildren] = useState([]);
   const [id, setId] = useState(field ? field.id : false);
@@ -33,10 +35,20 @@ const FieldAdd = ({
   const [type, setType] = useState(
     field ? field.type : schemaTypes[0].toLowerCase()
   );
+  const [options, setOptions] = useState({});
+  const [optionsVisible, setOptionsVisible] = useState(false);
   const [buttonText, setButtonText] = useState(
     buttonMode === 'edit' ? 'Update' : 'Add'
   );
 
+  // Set options for passed-in field
+  useEffect(() => {
+    if (!options.rows && field && field.type === 'text') {
+      setOptions({ ...options, rows: field.rows });
+    }
+  }, [field, options]);
+
+  // Set children for passed-in field
   useEffect(() => {
     if (
       field &&
@@ -50,6 +62,8 @@ const FieldAdd = ({
   function handleChange(event) {
     if (event.target.name === 'name') setName(event.target.value);
     if (event.target.name === 'type') setType(event.target.value);
+    if (event.target.name === 'rows')
+      setOptions({ ...options, rows: parseInt(event.target.value) });
   }
 
   function getThisField() {
@@ -59,6 +73,10 @@ const FieldAdd = ({
       name: formatName(name),
       type,
     };
+
+    if (type === 'text' && refRows?.current?.value) {
+      thisField.rows = parseInt(refRows.current.value);
+    }
 
     if (type === 'array') {
       delete thisField.name;
@@ -158,14 +176,14 @@ const FieldAdd = ({
             className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
           />
         </label>
-        <label htmlFor="type" className="w-2/5">
+        <label htmlFor="type" className="flex-1 pl-2">
           <Label>Type</Label>
           <select
             name="type"
             ref={refType}
             value={type}
             onChange={handleChange}
-            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 ml-1 border rounded border-gray-500 w-full"
+            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
           >
             {schemaTypes.map(schemaType => (
               <option
@@ -177,7 +195,34 @@ const FieldAdd = ({
             ))}
           </select>
         </label>
+
+        <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
+          <ButtonSmall
+            disabled={type !== 'text'}
+            color={optionsVisible ? `green` : `gray`}
+            icon={optionsVisible ? `sortAscending` : `sortDescending`}
+            onClick={() => setOptionsVisible(!optionsVisible)}
+          />
+        </div>
       </div>
+
+      {optionsVisible && (
+        <>
+          {type === 'text' && (
+            <div className="flex flex-col px-4 pb-2">
+              <Label>Rows</Label>
+              <input
+                name="rows"
+                type="number"
+                ref={refRows}
+                value={options ? options.rows : 0}
+                onChange={handleChange}
+                className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+              />
+            </div>
+          )}
+        </>
+      )}
 
       {(type === 'array' || type === 'object') && name && (
         <div

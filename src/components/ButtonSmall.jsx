@@ -3,9 +3,13 @@ import PropTypes from 'prop-types';
 
 import pencil from '../svg/sm-pencil.svg';
 import x from '../svg/sm-x.svg';
+import trash from '../svg/sm-trash.svg';
 import cheveronDown from '../svg/sm-cheveron-down.svg';
 import cheveronUp from '../svg/sm-cheveron-up.svg';
 import documentDuplicate from '../svg/sm-document-duplicate.svg';
+import clipboardCopy from '../svg/sm-clipboard-copy.svg';
+import sortAscending from '../svg/sm-sort-ascending.svg';
+import sortDescending from '../svg/sm-sort-descending.svg';
 
 const ButtonSmall = ({ onClick, disabled, color, icon }) => {
   const colors = {
@@ -19,21 +23,25 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
   const icons = {
     pencil,
     x,
+    trash,
     cheveronDown,
     cheveronUp,
     documentDuplicate,
+    clipboardCopy,
+    sortAscending,
+    sortDescending,
   };
 
   return (
     <button
       type="button"
-      className={`transition-colors duration-200 flex justify-center items-center text-white rounded w-5 h-5 flex-shrink-0 ${
+      className={`transition-colors duration-200 flex justify-center items-center text-white rounded-sm w-5 h-5 flex-shrink-0 ${
         colors[color]
       } ${disabled ? 'opacity-25 pointer-events-none' : ''}`}
       disabled={disabled}
       onClick={onClick}
     >
-      <img className="w-3 h-auto text-white" src={icons[icon]} alt="edit" />
+      <img className="w-4 h-auto text-white" src={icons[icon]} alt="edit" />
     </button>
   );
 };
