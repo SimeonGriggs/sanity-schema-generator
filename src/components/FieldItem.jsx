@@ -12,9 +12,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
   const [children, setChildren] = useState([]);
 
   useEffect(() => {
-    if (!parentId) {
-      setChildren([...schema]);
-    } else if (field) {
+    if (field) {
       if (field.of) {
         setChildren(field.of);
       } else if (field.fields) {
@@ -32,7 +30,6 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
       // Search and delete deep field
       let currentSchema = [...schema];
       currentSchema = findFieldById(currentSchema, id, 'delete');
-      console.log(currentSchema);
 
       setSchema(currentSchema);
     }

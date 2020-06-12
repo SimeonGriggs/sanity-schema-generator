@@ -14,9 +14,9 @@ function App() {
     <div className="min-h-screen">
       {/* <History schema={schema} setSchema={setSchema} /> */}
       <Fields schema={schema} setSchema={setSchema} />
-      <main className="flex">
-        <div className="w-2/5 xl:w-1/3"></div>
-        <div className="flex-1 px-16">
+      <main className="md:flex">
+        <div className="md:w-2/5 xl:w-1/3"></div>
+        <div className="flex-1 px-4 md:px-16">
           <Header />
           <Output schema={schema} />
           <Footer />
