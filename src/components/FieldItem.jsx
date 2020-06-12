@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import FieldAdd from './FieldAdd.jsx';
@@ -9,7 +9,19 @@ import { findFieldById } from '../helpers/helpers.js';
 
 const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
   const [editorVisible, setEditorVisible] = useState(false);
-  const children = field.of || field.fields || false;
+  const [children, setChildren] = useState([]);
+
+  useEffect(() => {
+    if (!parentId) {
+      setChildren([...schema]);
+    } else if (field) {
+      if (field.of) {
+        setChildren(field.of);
+      } else if (field.fields) {
+        setChildren(field.fields);
+      }
+    }
+  }, [field, field.id, parentId, schema]);
 
   // Delete field based on name
   function deleteField(id) {
@@ -20,6 +32,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
       // Search and delete deep field
       let currentSchema = [...schema];
       currentSchema = findFieldById(currentSchema, id, 'delete');
+      console.log(currentSchema);
 
       setSchema(currentSchema);
     }

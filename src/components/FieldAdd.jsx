@@ -9,7 +9,6 @@ import {
   findFieldById,
   formatName,
   formatTitle,
-  titleCaseWord,
   createId,
 } from '../helpers/helpers.js';
 import { schemaTypes } from '../helpers/schemaTypes.js';
@@ -52,13 +51,13 @@ const FieldAdd = ({
     if (!schemaTypes[type].options) return;
 
     // Field options have already been passed in
-    // OR This field has options, but they're not the options of the current type
+    // OR this field has options, but they're not the options of the current type
     if (Object.keys(options).length) {
-      const currentOptions = Object.keys(options).filter(
+      const fieldTypeOptions = Object.keys(options).filter(
         key => schemaTypes[type].options[key]
       );
 
-      if (!currentOptions.length) setOptions({});
+      if (!fieldTypeOptions.length) setOptions({});
 
       return;
     }
@@ -67,10 +66,12 @@ const FieldAdd = ({
     const fieldOptions = {};
 
     Object.keys(schemaTypes[type].options).forEach(option => {
-      fieldOptions[option] = field[option];
+      if (field[option]) fieldOptions[option] = field[option];
     });
 
-    setOptions(fieldOptions);
+    if (Object.keys(fieldOptions).length) {
+      setOptions(fieldOptions);
+    }
   }, [field, options, type]);
 
   // Set children for passed-in field
@@ -101,7 +102,9 @@ const FieldAdd = ({
     if (schemaTypes[type].options[inputName]) {
       const fieldOptions = { ...options };
 
-      if (schemaTypes[type].options[inputName] === 'number') {
+      if (!value) {
+        delete fieldOptions[inputName];
+      } else if (schemaTypes[type].options[inputName].type === 'number') {
         fieldOptions[inputName] = parseInt(value);
       } else {
         fieldOptions[inputName] = value;
@@ -239,7 +242,7 @@ const FieldAdd = ({
 
         <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
           <ButtonSmall
-            disabled={!schemaTypes[type].options}
+            disabled={!Object.keys(schemaTypes[type].options).length}
             color={optionsVisible ? `green` : `gray`}
             icon={optionsVisible ? `sortAscending` : `sortDescending`}
             onClick={() => setOptionsVisible(!optionsVisible)}
@@ -257,10 +260,16 @@ const FieldAdd = ({
             ${index === 0 ? `pt-1 border-t border-gray-200 ` : ``}
              `}
           >
-            <Label>{option}</Label>
+            <Label>
+              {option}
+              {schemaTypes[type].options[option].required && (
+                <span className="text-red-500">&bull;</span>
+              )}
+            </Label>
             <input
               name={option}
-              type={schemaTypes[type].options[option]}
+              type={schemaTypes[type].options[option].type}
+              placeholder={schemaTypes[type].options[option].default}
               ref={refOptions[index]}
               value={options[option] || ''}
               onChange={handleChange}
