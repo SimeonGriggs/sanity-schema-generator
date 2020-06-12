@@ -202,81 +202,85 @@ const FieldAdd = ({
   });
 
   return (
-    <form
-      onSubmit={e => handleSubmit(e)}
+    <section
       className={`bg-white rounded-md flex flex-col ${
         !parentId ? `shadow-md mb-2` : ``
       }`}
     >
-      <div
-        className={`flex p-2 ${
-          parentId ? 'border border-b-0 border-gray-200 rounded-t pt-0' : `px-4`
-        }`}
-      >
-        <label htmlFor="name" className="w-3/5">
-          <Label>name</Label>
-          <input
-            name="name"
-            ref={refName}
-            value={name}
-            onChange={handleChange}
-            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
-          />
-        </label>
-        <label htmlFor="type" className="flex-1 pl-2">
-          <Label>type</Label>
-          <select
-            name="type"
-            ref={refType}
-            value={type}
-            onChange={handleChange}
-            className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
-          >
-            {Object.keys(schemaTypes).map(schemaType => (
-              <option key={schemaType} value={schemaType}>
-                {schemaTypes[schemaType].title}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
-          <ButtonSmall
-            disabled={!Object.keys(schemaTypes[type].options).length}
-            color={optionsVisible ? `green` : `gray`}
-            icon={optionsVisible ? `sortAscending` : `sortDescending`}
-            onClick={() => setOptionsVisible(!optionsVisible)}
-          />
-        </div>
-      </div>
-
-      {optionsVisible &&
-        schemaTypes[type].options &&
-        Object.keys(schemaTypes[type].options).map((option, index) => (
-          <div
-            key={option}
-            className={`flex flex-col pb-2
-            ${parentId ? `px-2` : `px-4`}
-            ${index === 0 ? `pt-1 border-t border-gray-200 ` : ``}
-             `}
-          >
-            <Label>
-              {option}
-              {schemaTypes[type].options[option].required && (
-                <span className="text-red-500">&bull;</span>
-              )}
-            </Label>
+      <form onSubmit={e => handleSubmit(e)}>
+        <div
+          className={`flex p-2 ${
+            parentId
+              ? 'border border-b-0 border-gray-200 rounded-t pt-0'
+              : `px-4`
+          }`}
+        >
+          <label htmlFor="name" className="w-3/5">
+            <Label>name</Label>
             <input
-              name={option}
-              type={schemaTypes[type].options[option].type}
-              placeholder={schemaTypes[type].options[option].default}
-              ref={refOptions[index]}
-              value={options[option] || ''}
+              name="name"
+              ref={refName}
+              value={name}
               onChange={handleChange}
               className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
             />
+          </label>
+          <label htmlFor="type" className="flex-1 pl-2">
+            <Label>type</Label>
+            <select
+              name="type"
+              ref={refType}
+              value={type}
+              onChange={handleChange}
+              className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+            >
+              {Object.keys(schemaTypes).map(schemaType => (
+                <option key={schemaType} value={schemaType}>
+                  {schemaTypes[schemaType].title}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
+            <ButtonSmall
+              disabled={!Object.keys(schemaTypes[type].options).length}
+              color={optionsVisible ? `green` : `gray`}
+              icon={optionsVisible ? `sortAscending` : `sortDescending`}
+              onClick={() => setOptionsVisible(!optionsVisible)}
+            />
           </div>
-        ))}
+        </div>
+
+        {optionsVisible &&
+          schemaTypes[type].options &&
+          Object.keys(schemaTypes[type].options).map((option, index) => (
+            <div
+              key={option}
+              className={`flex flex-col pb-2
+            ${parentId ? `px-2` : `px-4`}
+            ${index === 0 ? `pt-1 border-t border-gray-200 ` : ``}
+             `}
+            >
+              <Label>
+                {option}
+                {schemaTypes[type].options[option].required && (
+                  <span className="text-red-500">&bull;</span>
+                )}
+              </Label>
+              {/* TODO: These inputs don't submit the form enter? */}
+              <input
+                name={option}
+                type={schemaTypes[type].options[option].type}
+                placeholder={schemaTypes[type].options[option].default}
+                ref={refOptions[index]}
+                value={options[option] || ''}
+                onChange={handleChange}
+                className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+              />
+            </div>
+          ))}
+      </form>
 
       {(type === 'array' || type === 'object') && name && (
         <div
@@ -311,10 +315,10 @@ const FieldAdd = ({
           {schemaTypes[type].title} Field
         </button>
       )}
-
       {!parentId && (
         <button
-          type="submit"
+          onClick={handleSubmit}
+          type="button"
           className="py-2 px-4 w-full bg-green-400 focus:bg-green-600 hover:bg-green-600 transition-colors duration-200 text-white flex items-center justify-center font-bold text-sm"
         >
           <img className="w-5 h-auto mr-2 text-white" src={plus} alt="" />
@@ -323,7 +327,7 @@ const FieldAdd = ({
           {schemaTypes[type].title} Field
         </button>
       )}
-    </form>
+    </section>
   );
 };
 
