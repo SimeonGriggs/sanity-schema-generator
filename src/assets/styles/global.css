@@ -1,0 +1,18 @@
+html {
+  @apply bg-navy-900 text-navy-100;
+
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-text-size-adjust: 100%;
+  -ms-font-feature-settings: "kern" 1;
+  font-feature-settings: "kern";
+}
+
+a {
+  @apply transition-colors duration-200 ease-out;
+}

@@ -1,0 +1,43 @@
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: theme("fontWeight.normal");
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-Regular.woff2");
+}
+
+@font-face {
+  font-family: "JetBrains Mono";
+  font-weight: theme("fontWeight.bold");
+  font-display: swap;
+  src: url("./assets/fonts/JetBrainsMono-Bold.woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: theme("fontWeight.normal");
+  font-display: swap;
+  src: url("./assets/fonts/Inter-Regular.woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: theme("fontWeight.normal");
+  font-style: italic;
+  font-display: swap;
+  src: url("./assets/fonts/Inter-Italic.woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: theme("fontWeight.bold");
+  font-display: swap;
+  src: url("./assets/fonts/Inter-Black.woff2");
+}
+
+@font-face {
+  font-family: "Inter";
+  font-weight: theme("fontWeight.bold");
+  font-style: italic;
+  font-display: swap;
+  src: url("./assets/fonts/Inter-BlackItalic.woff2");
+}

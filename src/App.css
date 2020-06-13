@@ -1,9 +1,14 @@
-@tailwind base;
+/* purgecss start ignore */
+@import "tailwindcss/base";
 
-@tailwind components;
+@import "assets/styles/global.css";
+@import "assets/styles/fonts.css";
+@import "assets/styles/typography.css";
+@import "assets/styles/forms.css";
+/* @import "assets/styles/gradients.css"; */
 
-body {
-  @apply bg-purple-900 text-purple-100;
-}
+@import "tailwindcss/components";
+/* purgecss end ignore */
 
-@tailwind utilities;
+@import "tailwindcss/utilities";
+@import "tailwindcss/screens";

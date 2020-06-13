@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 
 import FieldList from './FieldList.jsx';
+import FieldOptions from './FieldOptions.jsx';
 import Label from './Label.jsx';
 import ButtonSmall from './ButtonSmall.jsx';
 
@@ -222,7 +223,7 @@ const FieldAdd = ({
               ref={refName}
               value={name}
               onChange={handleChange}
-              className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+              className="input"
             />
           </label>
           <label htmlFor="type" className="flex-1 pl-2">
@@ -232,7 +233,7 @@ const FieldAdd = ({
               ref={refType}
               value={type}
               onChange={handleChange}
-              className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
+              className="input"
             >
               {Object.keys(schemaTypes).map(schemaType => (
                 <option key={schemaType} value={schemaType}>
@@ -245,41 +246,21 @@ const FieldAdd = ({
           <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
             <ButtonSmall
               disabled={!Object.keys(schemaTypes[type].options).length}
-              color={optionsVisible ? `green` : `gray`}
+              color={optionsVisible ? `aqua` : `blue`}
               icon={optionsVisible ? `sortAscending` : `sortDescending`}
               onClick={() => setOptionsVisible(!optionsVisible)}
             />
           </div>
         </div>
 
-        {optionsVisible &&
-          schemaTypes[type].options &&
-          Object.keys(schemaTypes[type].options).map((option, index) => (
-            <div
-              key={option}
-              className={`flex flex-col pb-2
-            ${parentId ? `px-2` : `px-4`}
-            ${index === 0 ? `pt-1 border-t border-gray-200 ` : ``}
-             `}
-            >
-              <Label>
-                {option}
-                {schemaTypes[type].options[option].required && (
-                  <span className="text-red-500">&bull;</span>
-                )}
-              </Label>
-              {/* TODO: These inputs don't submit the form enter? */}
-              <input
-                name={option}
-                type={schemaTypes[type].options[option].type}
-                placeholder={schemaTypes[type].options[option].default}
-                ref={refOptions[index]}
-                value={options[option] || ''}
-                onChange={handleChange}
-                className="outline-none focus:border-green-400 focus:bg-green-100 bg-white p-2 border rounded border-gray-500 w-full"
-              />
-            </div>
-          ))}
+        {optionsVisible && schemaTypes[type].options && (
+          <FieldOptions
+            typeOptions={schemaTypes[type].options}
+            parentId={parentId}
+            options={options}
+            handleChange={handleChange}
+          />
+        )}
       </form>
 
       {(type === 'array' || type === 'object') && name && (
@@ -306,7 +287,7 @@ const FieldAdd = ({
           type="button"
           className={`py-2 px-4 w-full rounded-b border transition-colors duration-200 flex items-center justify-center font-bold text-sm ${
             name
-              ? `border-green-300 bg-green-200 text-green-600 focus:bg-green-600 focus:text-white focus:outline-none hover:border-green-600 hover:bg-green-600 hover:text-white`
+              ? `border-blue-300 bg-blue-100 text-blue-500 focus:bg-blue-700 focus:text-white focus:outline-none hover:border-blue-700 hover:bg-blue-700 hover:text-white`
               : `border-gray-300 bg-gray-200 text-gray-400 pointer-events-none`
           }`}
         >
@@ -319,7 +300,12 @@ const FieldAdd = ({
         <button
           onClick={handleSubmit}
           type="button"
-          className="py-2 px-4 w-full bg-green-400 focus:bg-green-600 hover:bg-green-600 transition-colors duration-200 text-white flex items-center justify-center font-bold text-sm"
+          className={`py-2 px-4 w-full  transition-colors duration-200 text-white flex items-center justify-center font-bold text-sm
+          ${
+            name
+              ? `bg-blue-500 focus:bg-blue-700 hover:bg-blue-700`
+              : `bg-gray-500 focus:bg-gray-700 hover:bg-gray-700`
+          }`}
         >
           <img className="w-5 h-auto mr-2 text-white" src={plus} alt="" />
           {buttonText}

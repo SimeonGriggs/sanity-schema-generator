@@ -10,14 +10,20 @@ import documentDuplicate from '../svg/sm-document-duplicate.svg';
 import clipboardCopy from '../svg/sm-clipboard-copy.svg';
 import sortAscending from '../svg/sm-sort-ascending.svg';
 import sortDescending from '../svg/sm-sort-descending.svg';
+import info from '../svg/sm-information-circle.svg';
 
-const ButtonSmall = ({ onClick, disabled, color, icon }) => {
+const ButtonSmall = ({ onClick, disabled, color, icon, className }) => {
   const colors = {
-    red: 'bg-red-400 hover:bg-red-500 focus:bg-red-500',
-    orange: 'bg-orange-400 hover:bg-orange-500 focus:bg-orange-500',
-    green: 'bg-green-400 hover:bg-green-500 focus:bg-green-500',
-    blue: 'bg-gray-400 hover:bg-gray-500 focus:bg-gray-500',
-    gray: 'bg-gray-500 hover:bg-gray-700 focus:bg-gray-700',
+    red: 'bg-red-gradient bg-red-400 hover:bg-red-500 focus:bg-red-500',
+    orange:
+      'bg-orange-gradient bg-orange-400 hover:bg-orange-500 focus:bg-orange-500',
+    green:
+      'bg-green-gradient bg-green-400 hover:bg-green-500 focus:bg-green-500',
+    blue: 'bg-blue-gradient bg-blue-500 hover:bg-blue-700 focus:bg-blue-700',
+    aqua: 'bg-aqua-gradient bg-aqua-500 hover:bg-aqua-700 focus:bg-aqua-700',
+    gray: 'bg-gray-gradient bg-gray-500 hover:bg-gray-700 focus:bg-gray-700',
+    purple:
+      'bg-purple-gradient bg-purple-500 hover:bg-purple-700 focus:bg-purple-700',
   };
 
   const icons = {
@@ -30,6 +36,7 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
     clipboardCopy,
     sortAscending,
     sortDescending,
+    info,
   };
 
   return (
@@ -37,7 +44,8 @@ const ButtonSmall = ({ onClick, disabled, color, icon }) => {
       type="button"
       className={`transition-colors duration-200 flex justify-center items-center text-white rounded-sm w-5 h-5 flex-shrink-0 focus:outline-none ${
         colors[color]
-      } ${disabled ? 'opacity-25 pointer-events-none' : ''}`}
+      } ${disabled ? 'opacity-25 pointer-events-none' : ''}
+      ${className}`}
       disabled={disabled}
       onClick={onClick}
     >
@@ -53,4 +61,5 @@ ButtonSmall.propTypes = {
   disabled: PropTypes.bool,
   color: PropTypes.string,
   icon: PropTypes.string,
+  className: PropTypes.string,
 };

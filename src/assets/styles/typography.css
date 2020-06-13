@@ -1,0 +1,95 @@
+.typography {
+  @apply text-base leading-relaxed;
+}
+
+.typography h1,
+.typography h2,
+.typography h3 {
+  @apply leading-none font-black mt-16 mb-8 tracking-tighter;
+}
+
+.typography h1 {
+  @apply mt-0;
+}
+
+.typography h1,
+.typography h2,
+.typography h3 {
+  @apply text-blue-500;
+}
+
+.h1,
+.typography h1 {
+  @apply text-4xl;
+}
+
+@screen md {
+  .h1,
+  .typography h1 {
+    @apply text-6xl;
+  }
+}
+
+.h2,
+.typography h2 {
+  @apply text-3xl;
+}
+
+@screen md {
+  .h2,
+  .typography h2 {
+    @apply text-4xl;
+  }
+}
+
+.h3,
+.typography h3 {
+  @apply text-3xl;
+}
+
+.typography a {
+  @apply text-aqua-500 underline;
+}
+
+.typography a:hover {
+  @apply text-white bg-aqua-500 no-underline;
+}
+
+.typography h1 a:hover,
+.typography h2 a:hover,
+.typography h3 a:hover {
+  box-shadow: none;
+}
+
+.typography hr {
+  @apply border-blue-100;
+}
+
+.typography p,
+.typography hr,
+.typography pre,
+.typography ul,
+.typography ol {
+  @apply mb-5;
+}
+
+.typography ul,
+.typography ol {
+  @apply pl-5;
+}
+
+.typography li {
+  @apply mb-2;
+}
+
+.typography ul li {
+  @apply list-disc;
+}
+
+.typography ol li {
+  @apply list-decimal;
+}
+
+.typography > div > *:first-child {
+  @apply mt-0;
+}
