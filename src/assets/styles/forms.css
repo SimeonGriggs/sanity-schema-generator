@@ -15,6 +15,32 @@
   @apply border-aqua-600 bg-aqua-100;
 }
 
-.checkbox {
-  @apply w-12 h-12;
+.radio {
+  @apply w-6 h-6 block rounded-full border border-gray-500 transition-colors duration-200 ease-out;
+}
+
+input[type="radio"] + .radio {
+  @apply outline-none transition-colors duration-200 ease-out flex items-center justify-center overflow-hidden;
+}
+
+input[type="radio"]:hover + .radio {
+  content: "";
+
+  @apply border-aqua-600;
+}
+
+input[type="radio"]:checked + .radio {
+  @apply border-aqua-600 bg-aqua-100;
+}
+
+input[type="radio"] + .radio::before {
+  content: "";
+
+  @apply block bg-white w-4 h-4 rounded-full transition-colors duration-300 ease-out;
+}
+
+input[type="radio"]:checked + .radio::before {
+  content: "";
+
+  @apply bg-aqua-600;
 }

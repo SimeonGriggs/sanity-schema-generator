@@ -257,16 +257,20 @@ export const schemaTypes = {
   },
   reference: {
     title: 'Reference',
+    docs: 'https://www.sanity.io/docs/reference-type',
     options: {
       // TODO:
       to: {
         required: true,
         type: 'array:string',
+        description:
+          'Must contain an array naming all the types which may be referenced e.g. [{type: "person"}].',
       },
       weak: {
         type: 'boolean',
         default: false,
-        description: 'If set to true the reference will be made weak.',
+        description:
+          'This means you can discard the object being referred to without first deleting the reference, thereby leaving a dangling pointer.',
       },
       // TODO: Handle the difference between a function and a string here
       filter: {

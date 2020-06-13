@@ -67,7 +67,14 @@ const FieldAdd = ({
     const fieldOptions = {};
 
     Object.keys(schemaTypes[type].options).forEach(option => {
-      if (field[option]) fieldOptions[option] = field[option];
+      console.log(field[option]);
+      if (typeof field[option] === 'boolean' && !field[option]) {
+        // Pass along 'false' bool values
+        fieldOptions[option] = field[option];
+      } else if (field[option]) {
+        // Otherwise only pass in true or defined values
+        fieldOptions[option] = field[option];
+      }
     });
 
     if (Object.keys(fieldOptions).length) {
@@ -107,6 +114,19 @@ const FieldAdd = ({
         delete fieldOptions[inputName];
       } else if (schemaTypes[type].options[inputName].type === 'number') {
         fieldOptions[inputName] = parseInt(value);
+      } else if (schemaTypes[type].options[inputName].type === 'boolean') {
+        switch (value) {
+          case 'false':
+            fieldOptions[inputName] = false;
+            break;
+          case 'true':
+            fieldOptions[inputName] = true;
+            break;
+          default:
+            fieldOptions[inputName] = '';
+            // delete fieldOptions[inputName];
+            break;
+        }
       } else {
         fieldOptions[inputName] = value;
       }
@@ -299,12 +319,13 @@ const FieldAdd = ({
       {!parentId && (
         <button
           onClick={handleSubmit}
+          disabled={!name}
           type="button"
-          className={`py-2 px-4 w-full  transition-colors duration-200 text-white flex items-center justify-center font-bold text-sm
+          className={`py-2 px-4 w-full transition-colors duration-200 text-white flex items-center justify-center font-bold text-sm
           ${
             name
               ? `bg-blue-500 focus:bg-blue-700 hover:bg-blue-700`
-              : `bg-gray-500 focus:bg-gray-700 hover:bg-gray-700`
+              : `bg-gray-400`
           }`}
         >
           <img className="w-5 h-auto mr-2 text-white" src={plus} alt="" />

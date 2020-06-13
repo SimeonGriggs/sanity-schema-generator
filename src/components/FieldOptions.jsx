@@ -12,15 +12,15 @@ const FieldOptions = ({ typeOptions, parentId, options, handleChange }) => {
       {Object.keys(typeOptions).map((option, index) => (
         <div
           key={option}
-          className={`flex flex-col pb-2
+          className={`flex flex-col py-2
           ${parentId ? `px-2` : `px-4`}
-          pt-1 border-t border-gray-200
+           border-t border-gray-200
            `}
         >
           <Label>
             {option}
             {typeOptions[option].required && (
-              <span className="text-red-500">&bull;</span>
+              <span className="pl-2 text-red-500">required</span>
             )}
             {typeOptions[option].type && (
               <span className="pl-2 opacity-50">
@@ -28,7 +28,7 @@ const FieldOptions = ({ typeOptions, parentId, options, handleChange }) => {
               </span>
             )}
           </Label>
-          <div className="flex">
+          <div className="flex items-center">
             {/* TODO: These inputs don't submit the form enter? */}
             <div className="flex-1">
               {/* Numbers, and strings without choices */}
@@ -92,29 +92,78 @@ const FieldOptions = ({ typeOptions, parentId, options, handleChange }) => {
                 )}
 
               {/* Booleans */}
-              {/* {typeOptions[option].type === 'boolean' && (
-                <input
-                  name={option}
-                  type="checkbox"
-                  //   placeholder={typeOptions[option].default}
-                  //   ref={refOptions[index]}
-                  //   value={options[option] || ''}
-                  onChange={handleChange}
-                  className="checkbox"
-                />
-              )} */}
+              {typeOptions[option].type === 'boolean' && (
+                <div className="flex justify-start space-x-4">
+                  <label
+                    className="flex flex-col items-start pt-2 border-r border-gray-200 pr-3 cursor-pointer"
+                    htmlFor={`default-${option}`}
+                  >
+                    <input
+                      className="hidden"
+                      type="radio"
+                      value=""
+                      id={`default-${option}`}
+                      name={option}
+                      onChange={handleChange}
+                      checked={typeof options[option] !== 'boolean'}
+                    ></input>
+                    <span className="radio"></span>
+                    <Label dark>
+                      default:
+                      <br /> {typeOptions[option].default ? `true` : `false`}
+                    </Label>
+                  </label>
+
+                  <label
+                    className="flex flex-col items-start pt-2 cursor-pointer"
+                    htmlFor={`${option}-default`}
+                  >
+                    <input
+                      className="hidden"
+                      type="radio"
+                      value="true"
+                      id={`${option}-default`}
+                      name={option}
+                      onChange={handleChange}
+                      checked={
+                        typeof options[option] === 'boolean' && options[option]
+                      }
+                    ></input>
+                    <span className="radio"></span>
+                    <Label dark>true</Label>
+                  </label>
+                  <label
+                    className="flex flex-col items-start pt-2 cursor-pointer"
+                    htmlFor={`${option}-false`}
+                  >
+                    <input
+                      className="hidden"
+                      type="radio"
+                      value="false"
+                      id={`${option}-false`}
+                      name={option}
+                      onChange={handleChange}
+                      checked={
+                        typeof options[option] === 'boolean' && !options[option]
+                      }
+                    ></input>
+                    <span className="radio"></span>
+                    <Label dark>false</Label>
+                  </label>
+                </div>
+              )}
 
               {/* Array's */}
               {(typeOptions[option].type === 'array' ||
-                typeOptions[option].type === 'boolean' ||
                 typeOptions[option].type === 'function' ||
+                typeOptions[option].type === 'string:function' ||
                 typeOptions[option].type === 'array:string') && (
                 <div className="bg-gray-200 text-gray-500 rounded text-sm p-2">
                   Not yet editable. Check back soon!
                 </div>
               )}
             </div>
-            <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-10">
+            <div className="pl-2 flex-shrink-0 flex items-center h-full">
               <ButtonSmall
                 disabled={!typeOptions[option].description}
                 color="purple"

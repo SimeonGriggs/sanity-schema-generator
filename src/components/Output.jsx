@@ -34,7 +34,7 @@ const Output = ({ schema }) => {
   }
 
   return (
-    <section className="output bg-blue-900 text-blue-100 rounded-lg p-2 px-4 flex-1 text-sm relative flex flex-col">
+    <section className="output bg-blue-900 text-white rounded-lg p-2 px-4 flex-1 text-sm relative flex flex-col">
       <div className="absolute flex items-center top-0 right-0 py-2 px-4">
         <div
           className={`text-white font-bold transition-opacity duration-200 ease-in-out p-2 ${

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 const Label = ({ children, className, dark }) => (
   <span
     className={`${className} ${
-      dark ? `` : `text-gray-500`
+      dark ? `` : `text-gray-600`
     } text-xs font-mono mb-1 inline-block leading-2`}
   >
     {children}
