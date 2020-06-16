@@ -217,12 +217,12 @@ export const schemaTypes = {
     title: 'Object',
     docs: 'https://www.sanity.io/docs/object-type',
     options: {
-      // fields: {
-      //   type: 'array',
-      //   required: true,
-      //   description:
-      //     'The fields of this object. At least one field is required. See documentation below.',
-      // },
+      fields: {
+        type: 'array',
+        required: true,
+        description:
+          'The fields of this object. At least one field is required.',
+      },
       // TODO: These should populate a selectable list for all fields in this object
       fieldsets: {
         type: 'array:string',
@@ -352,7 +352,11 @@ export const schemaTypes = {
     title: 'Array',
     docs: 'https://www.sanity.io/docs/array-type',
     options: {
-      // of: { type: 'array', required: true, description: 'Defines which types are allowed as members of the array.' }
+      of: {
+        type: 'array',
+        required: true,
+        description: 'Defines which types are allowed as members of the array.',
+      },
       sortable: {
         type: 'boolean',
         default: true,
@@ -361,12 +365,13 @@ export const schemaTypes = {
       },
       layout: {
         type: 'string',
+        default: 'tags',
         choices: ['tags', 'grid'],
         description:
           'If set to tags, renders the array as a single, tokenized input field. This option only works if the array contains strings.',
       },
       list: {
-        type: 'array',
+        type: 'array:string',
         description:
           'If set to tags, renders the array as a single, tokenized input field. This option only works if the array contains strings.',
       },

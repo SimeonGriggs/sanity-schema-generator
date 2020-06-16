@@ -9,20 +9,21 @@ const FieldList = ({ schema, setSchema, hasParent, parentId }) => {
   const parentField = parentId ? findFieldById(schema, parentId) : false;
 
   let children = [];
-
   if (!parentId) {
     children = schema;
-  } else if (parentField && parentField.type === 'array') {
+  } else if (parentField && parentField.of) {
     children = parentField.of;
-  } else if (parentField && parentField.type === 'object') {
+  } else if (parentField && parentField.fields) {
     children = parentField.fields;
   }
+
+  if (!children.length) return null;
 
   return (
     <section
       className={`flex flex-col divide-gray-300 divide-y 
       ${hasParent ? `px-0` : `px-2`}
-      ${parentId ? `mt-2 border-l-4 ` : ``}
+      ${parentId ? `border-l-4 ` : ``}
       `}
     >
       <AnimatePresence>

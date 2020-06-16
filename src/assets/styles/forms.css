@@ -15,6 +15,7 @@
   @apply border-aqua-600 bg-aqua-100;
 }
 
+/* TODO: Better job of showing *focus* state for keyboard nav */
 .radio {
   @apply w-6 h-6 block rounded-full border border-gray-500 transition-colors duration-200 ease-out;
 }

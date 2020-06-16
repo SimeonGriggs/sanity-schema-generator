@@ -6,17 +6,18 @@ import FieldList from './FieldList.jsx';
 import ButtonSmall from './ButtonSmall.jsx';
 
 import { findFieldById } from '../helpers/helpers.js';
+import Label from './Label.jsx';
 
 const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
   const [editorVisible, setEditorVisible] = useState(false);
-  const [children, setChildren] = useState([]);
+  const [itemChildFields, setItemChildFields] = useState({});
 
   useEffect(() => {
     if (field) {
       if (field.of) {
-        setChildren(field.of);
+        setItemChildFields(field.of);
       } else if (field.fields) {
-        setChildren(field.fields);
+        setItemChildFields(field.fields);
       }
     }
   }, [field, field.id, parentId, schema]);
@@ -64,15 +65,15 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
         <div className="flex-1 leading-5">
           {field.title}
           <br />
-          <code className="text-xs">
-            {field.name && (
-              <span className="text-gray-500 pr-1">{field.name}</span>
+          <Label>
+            {field.name}
+            {field.type && (
+              <span className="pl-2 opacity-50">{field.type}</span>
             )}
-            {field.type && <span className="text-gray-400">{field.type}</span>}
-          </code>
+          </Label>
         </div>
 
-        <div className="pl-4 grid grid-flow-col grid-rows-2 gap-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
+        <div className="pl-4 pr-2 grid grid-flow-col grid-rows-2 gap-1 transition-opacity duration-200 opacity-0 group-hover:opacity-100">
           <ButtonSmall
             color="gray"
             icon="cheveronUp"
@@ -88,7 +89,7 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
             onClick={() => moveField(field.id, 1)}
           />
           <ButtonSmall
-            color={editorVisible ? `green` : `orange`}
+            color={editorVisible ? `aqua` : `orange`}
             icon={editorVisible ? `x` : `pencil`}
             onClick={() => setEditorVisible(!editorVisible)}
           />
@@ -109,19 +110,21 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
             setEditorVisible={setEditorVisible}
             schema={schema}
             setSchema={setSchema}
-            parentId={parentId}
+            hasParent
           />
         </div>
       )}
 
       {/* Child fields in main list */}
-      {children && children.length > 0 && !editorVisible && (
-        <FieldList
-          schema={schema}
-          setSchema={setSchema}
-          hasParent
-          parentId={field.id}
-        />
+      {itemChildFields && itemChildFields.length > 0 && !editorVisible && (
+        <div className="pt-2">
+          <FieldList
+            schema={schema}
+            setSchema={setSchema}
+            hasParent
+            parentId={field.id}
+          />
+        </div>
       )}
     </div>
   );
