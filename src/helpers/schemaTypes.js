@@ -4,7 +4,7 @@ export const schemaTypes = {
   text: {
     title: 'Text',
     docs: 'https://www.sanity.io/docs/text-type',
-    description: 'Value must be set to text.',
+    description: 'A basic string expected to contain multiple lines.',
     options: {
       rows: {
         type: 'number',
@@ -27,6 +27,8 @@ export const schemaTypes = {
   block: {
     title: 'Block',
     docs: 'https://www.sanity.io/docs/block-type',
+    description:
+      'Schema type for block which provides a rich text editor for block content.',
     options: {},
     // options: {
     //   styles: { type: 'array' },
@@ -43,6 +45,7 @@ export const schemaTypes = {
   boolean: {
     title: 'Boolean',
     docs: 'https://www.sanity.io/docs/boolean-type',
+    description: 'A boolean, true or false.',
     options: {
       layout: {
         type: 'string',
@@ -60,6 +63,7 @@ export const schemaTypes = {
   date: {
     title: 'Date',
     docs: 'https://www.sanity.io/docs/date-type',
+    description: `An ISO-8601 formatted string containing date. E.g.  2017-02-12.`,
     options: {
       dateFormat: {
         type: 'string',
@@ -81,6 +85,9 @@ export const schemaTypes = {
   },
   datetime: {
     title: 'Datetime',
+    docs: 'https://www.sanity.io/docs/datetime-type',
+    description:
+      'An ISO-8601 formatted string containing date and time stored in UTC. E.g.  2017-02-12T09:15:00Z.',
     options: {
       dateFormat: {
         type: 'string',
@@ -121,6 +128,8 @@ export const schemaTypes = {
   file: {
     title: 'File',
     docs: 'https://www.sanity.io/docs/file-type',
+    description:
+      'A file is a special kind of object that includes an implicit asset field, which is a reference to a file asset document.',
     options: {
       fields: {
         type: 'array',
@@ -146,6 +155,8 @@ export const schemaTypes = {
   geopoint: {
     title: 'Geopoint',
     docs: 'https://www.sanity.io/docs/geopoint-type',
+    description:
+      'An object signifying a global latitude/longitude/altitude coordinate.',
     options: {},
     validation: {
       required: validationRules.required,
@@ -154,6 +165,8 @@ export const schemaTypes = {
   },
   image: {
     title: 'Image',
+    docs: 'https://www.sanity.io/docs/image-type',
+    description: 'Schema type for uploading, selecting and editing images.',
     options: {
       fields: {
         type: 'array',
@@ -194,6 +207,8 @@ export const schemaTypes = {
   },
   number: {
     title: 'Number',
+    docs: 'https://www.sanity.io/docs/number-type',
+    description: 'Any number, e.g. 900, 900.0, 9E+2 or 9.0E+2.',
     options: {
       list: {
         type: 'array:string',
@@ -216,6 +231,8 @@ export const schemaTypes = {
   object: {
     title: 'Object',
     docs: 'https://www.sanity.io/docs/object-type',
+    description:
+      'Used to define custom types that has fields of strings, numbers, arrays as well as other object types.',
     options: {
       fields: {
         type: 'array',
@@ -258,6 +275,7 @@ export const schemaTypes = {
   reference: {
     title: 'Reference',
     docs: 'https://www.sanity.io/docs/reference-type',
+    description: 'A schema type for referencing other documents.',
     options: {
       // TODO:
       to: {
@@ -287,6 +305,8 @@ export const schemaTypes = {
   slug: {
     title: 'Slug',
     docs: 'https://www.sanity.io/docs/slug-type',
+    description:
+      'A schema type for slugs, typically used to create unique URLs.',
     options: {
       source: {
         type: 'string:function',
@@ -316,6 +336,8 @@ export const schemaTypes = {
   },
   string: {
     title: 'String',
+    docs: 'https://www.sanity.io/docs/string-type',
+    description: 'A schema type for strings and a selectable lists of strings.',
     options: {
       // TODO: This can be strings or objects
       list: {
@@ -351,6 +373,7 @@ export const schemaTypes = {
   array: {
     title: 'Array',
     docs: 'https://www.sanity.io/docs/array-type',
+    description: 'Schema type for arrays of other types.',
     options: {
       of: {
         type: 'array',
@@ -394,6 +417,8 @@ export const schemaTypes = {
   },
   url: {
     title: 'URL',
+    docs: 'https://www.sanity.io/docs/url-type',
+    description: 'A string which represents a URL.',
     options: {},
     validation: {
       uri: validationRules.uri,

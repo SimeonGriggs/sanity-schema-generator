@@ -35,8 +35,9 @@ const FieldAdd = ({
   const refName = useRef();
   const refType = useRef();
 
-  // Children fields for array, object, image and file types
   const [childFields, setChildFields] = useState([]);
+  const [descriptionVisible, setDescriptionVisible] = useState(false);
+  const [validationVisible, setValidationVisible] = useState(false);
 
   const [id, setId] = useState(field && !parentId ? field.id : '');
   const [name, setName] = useState(field && !parentId ? field.title : ''); // That's confusing :/
@@ -306,14 +307,14 @@ const FieldAdd = ({
     >
       <form className="bg-white rounded-md" onSubmit={e => handleSubmit(e)}>
         <div
-          className={`flex p-2 ${
+          className={`flex items-end justify-start p-2 ${
             parentId
               ? 'border border-b-0 border-gray-200 rounded-t pt-0'
-              : `px-4`
+              : `px-4 pt-4`
           }`}
         >
           <label htmlFor="name" className="w-3/5">
-            <Label className="mt-2 mb-1">name</Label>
+            <Label className="mb-1">name</Label>
             <input
               name="name"
               ref={refName}
@@ -323,7 +324,7 @@ const FieldAdd = ({
             />
           </label>
           <label htmlFor="type" className="flex-1 pl-2">
-            <Label className="mt-2 mb-1">type</Label>
+            <Label className="mb-1">type</Label>
             <select
               name="type"
               ref={refType}
@@ -339,7 +340,21 @@ const FieldAdd = ({
             </select>
           </label>
 
-          <div className="pl-2 flex-shrink-0 flex items-center mt-auto h-12">
+          <div className="pl-2 flex-shrink-0 flex flex-col items-center space-y-1">
+            <ButtonSmall
+              disabled={!schemaTypes[type].description}
+              color={descriptionVisible ? `green` : `purple`}
+              icon={descriptionVisible ? `x` : `info`}
+              className="rounded-full"
+              onClick={() => setDescriptionVisible(!descriptionVisible)}
+            />
+            <ButtonSmall
+              disabled={!schemaTypes[type].description}
+              color={validationVisible ? `green` : `red`}
+              icon={validationVisible ? `x` : `info`}
+              className="rounded-full"
+              onClick={() => setValidationVisible(!validationVisible)}
+            />
             <ButtonSmall
               disabled={!Object.keys(schemaTypes[type].options).length}
               color={optionsVisible ? `aqua` : `blue`}
@@ -348,6 +363,35 @@ const FieldAdd = ({
             />
           </div>
         </div>
+
+        {descriptionVisible && schemaTypes[type].description && (
+          <div className="mb-2 mx-4 p-2 bg-purple-100 text-purple-600 rounded text-sm">
+            {schemaTypes[type].description}
+            {schemaTypes[type].docs && (
+              <a
+                className="inline-block mt-2 hover:text-purple-800"
+                href={schemaTypes[type].docs}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Read more about <code className="font-bold">{type}</code> in the
+                docs.
+              </a>
+            )}
+          </div>
+        )}
+
+        {validationVisible && schemaTypes[type].validation && (
+          <div className="mb-2 mx-4 p-2 bg-red-100 text-red-600 rounded text-sm">
+            <p className="mb-2">
+              This tool doesn't currently setup vaidation rules, but{' '}
+              <code className="font-bold">{type}</code> has the following:
+            </p>
+            {Object.keys(schemaTypes[type].validation).map(rule => (
+              <p className="mb-2">&bull; {rule}</p>
+            ))}
+          </div>
+        )}
 
         {schemaTypes[type].options && (
           <FieldOptions
