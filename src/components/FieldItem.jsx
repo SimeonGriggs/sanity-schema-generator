@@ -121,7 +121,6 @@ const FieldItem = ({ field, index, schema, setSchema, parentId, count }) => {
           <FieldList
             schema={schema}
             setSchema={setSchema}
-            hasParent
             parentId={field.id}
           />
         </div>

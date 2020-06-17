@@ -11,6 +11,7 @@ import clipboardCopy from '../svg/sm-clipboard-copy.svg';
 import sortAscending from '../svg/sm-sort-ascending.svg';
 import sortDescending from '../svg/sm-sort-descending.svg';
 import info from '../svg/sm-information-circle.svg';
+import exclamation from '../svg/sm-exclamation.svg';
 
 const ButtonSmall = ({ onClick, disabled, color, icon, className }) => {
   const colors = {
@@ -37,6 +38,7 @@ const ButtonSmall = ({ onClick, disabled, color, icon, className }) => {
     sortAscending,
     sortDescending,
     info,
+    exclamation,
   };
 
   return (

@@ -1,6 +1,6 @@
 .input,
 .checkbox {
-  @apply outline-none bg-white p-2 border rounded border-gray-500 transition-colors duration-200 ease-out;
+  @apply outline-none bg-white p-2 border-2 rounded-lg border-gray-300 transition-colors duration-200 ease-out;
 }
 
 .input {

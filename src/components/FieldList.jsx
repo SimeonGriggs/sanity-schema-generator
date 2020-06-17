@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import FieldItem from './FieldItem.jsx';
 import { findFieldById } from '../helpers/helpers.js';
 
-const FieldList = ({ schema, setSchema, hasParent, parentId }) => {
+const FieldList = ({ schema, setSchema, parentId }) => {
   const parentField = parentId ? findFieldById(schema, parentId) : false;
 
   let children = [];
@@ -22,8 +22,7 @@ const FieldList = ({ schema, setSchema, hasParent, parentId }) => {
   return (
     <section
       className={`flex flex-col divide-gray-300 divide-y 
-      ${hasParent ? `px-0` : `px-2`}
-      ${parentId ? `border-l-4 ` : ``}
+      ${parentId ? `border-l-4` : `px-2`}
       `}
     >
       <AnimatePresence>
@@ -59,6 +58,5 @@ export default FieldList;
 FieldList.propTypes = {
   schema: PropTypes.array,
   setSchema: PropTypes.func,
-  hasParent: PropTypes.bool,
   parentId: PropTypes.string,
 };

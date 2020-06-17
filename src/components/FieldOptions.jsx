@@ -153,7 +153,7 @@ const FieldOptions = ({
                         <FieldList
                           schema={childFields}
                           setSchema={setChildFields}
-                          hasParent
+                          parentId={parentId}
                         />
                       )}
                     </div>

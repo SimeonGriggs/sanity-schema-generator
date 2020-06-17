@@ -72,6 +72,8 @@ const FieldAdd = ({
 
   // Set options for passed-in field
   useEffect(() => {
+    console.log(childFields);
+
     // Field is not set
     if (!field) return;
 
@@ -92,6 +94,8 @@ const FieldAdd = ({
 
     // Find the option keys this field *could* have and pass them in
     const fieldOptions = {};
+
+    console.log(childFields, type);
 
     // Add childFields from state, not form values
     if (childFields && childFields.length) {
@@ -212,8 +216,9 @@ const FieldAdd = ({
       const currentChildFields = [...childFields];
       currentChildFields.push(thisField);
       setChildFields(currentChildFields);
-      setName('');
-      return;
+      // setName('');
+      // setId('');
+      // return;
     }
 
     // Adding new fields on the end of an array
@@ -235,10 +240,10 @@ const FieldAdd = ({
         // Writing a new field
         currentSchema.push(thisField);
       }
-    } else if (field) {
+    } else {
       // Writing new inner field to an existing field
-      const newParentField = { ...field };
-      const parentType = field ? field.type : type;
+      const newParentField = findFieldById(currentSchema, parentId);
+      const parentType = newParentField ? newParentField.type : type;
 
       // This field type (or its parent) stores child fields on `fields`
       if (schemaTypes[parentType].options.fields) {
@@ -262,8 +267,6 @@ const FieldAdd = ({
         // Update the entire schema just to add this child field :/
         currentSchema = findFieldById(currentSchema, parentId, newParentField);
       }
-    } else {
-      console.error('Unhandled FieldAdd event');
     }
 
     // Write it!
@@ -307,7 +310,7 @@ const FieldAdd = ({
     >
       <form className="bg-white rounded-md" onSubmit={e => handleSubmit(e)}>
         <div
-          className={`flex items-end justify-start p-2 ${
+          className={`flex items-start justify-start p-2 ${
             parentId
               ? 'border border-b-0 border-gray-200 rounded-t pt-0'
               : `px-4 pt-4`
@@ -340,27 +343,32 @@ const FieldAdd = ({
             </select>
           </label>
 
-          <div className="pl-2 flex-shrink-0 flex flex-col items-center space-y-1">
-            <ButtonSmall
-              disabled={!schemaTypes[type].description}
-              color={descriptionVisible ? `green` : `purple`}
-              icon={descriptionVisible ? `x` : `info`}
-              className="rounded-full"
-              onClick={() => setDescriptionVisible(!descriptionVisible)}
-            />
-            <ButtonSmall
-              disabled={!schemaTypes[type].description}
-              color={validationVisible ? `green` : `red`}
-              icon={validationVisible ? `x` : `info`}
-              className="rounded-full"
-              onClick={() => setValidationVisible(!validationVisible)}
-            />
-            <ButtonSmall
-              disabled={!Object.keys(schemaTypes[type].options).length}
-              color={optionsVisible ? `aqua` : `blue`}
-              icon={optionsVisible ? `x` : `sortDescending`}
-              onClick={() => setOptionsVisible(!optionsVisible)}
-            />
+          <div className="flex items-center pl-2 mt-auto mb-1">
+            <div className="flex-shrink-0 flex flex-col items-center space-y-1">
+              <ButtonSmall
+                disabled={!schemaTypes[type].description}
+                color={descriptionVisible ? `green` : `purple`}
+                icon={descriptionVisible ? `x` : `info`}
+                // className="rounded-full"
+                onClick={() => setDescriptionVisible(!descriptionVisible)}
+              />
+              <ButtonSmall
+                disabled={!schemaTypes[type].description}
+                color={validationVisible ? `green` : `red`}
+                icon={validationVisible ? `x` : `exclamation`}
+                // className="rounded-full"
+                onClick={() => setValidationVisible(!validationVisible)}
+              />
+            </div>
+
+            <div className="pl-1 flex-shrink-0 flex flex-col items-center space-y-1">
+              <ButtonSmall
+                disabled={!Object.keys(schemaTypes[type].options).length}
+                color={optionsVisible ? `aqua` : `blue`}
+                icon={optionsVisible ? `x` : `sortDescending`}
+                onClick={() => setOptionsVisible(!optionsVisible)}
+              />
+            </div>
           </div>
         </div>
 
@@ -393,7 +401,7 @@ const FieldAdd = ({
           </div>
         )}
 
-        {schemaTypes[type].options && (
+        {schemaTypes[type].options && name && (
           <FieldOptions
             optionsVisible={optionsVisible}
             typeOptions={schemaTypes[type].options}
@@ -401,7 +409,6 @@ const FieldAdd = ({
             parentId={id}
             options={options}
             handleChange={handleChange}
-            // field={field}
             schema={schema}
             setSchema={setSchema}
             childFields={childFields}
@@ -426,13 +433,12 @@ const FieldAdd = ({
         </button>
       )}
 
-      {parentId && childFields && childFields.length > 0 && (
+      {childFields && childFields.length > 0 && (
         <div className="pt-2 bg-white rounded-b">
           <FieldList
             schema={childFields}
             setSchema={setChildFields}
-            hasParent
-            parentId={id}
+            // parentId={id}
           />
         </div>
       )}
@@ -446,7 +452,7 @@ const FieldAdd = ({
           ${field ? 'rounded-b' : ''}
           ${
             name
-              ? `bg-blue-500 focus:outline-none  focus:bg-blue-700 hover:bg-blue-700`
+              ? `bg-blue-500 focus:outline-none focus:bg-blue-700 hover:bg-blue-700 shadow-lg`
               : `bg-gray-400`
           }`}
         >
