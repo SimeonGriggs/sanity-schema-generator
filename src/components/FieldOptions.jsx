@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import FieldList from './FieldList.jsx';
 import FieldAdd from './FieldAdd.jsx';
 import FieldOptionInput from './FieldOptionInput.jsx';
+import FieldOptionInputMulti from './FieldOptionInputMulti.jsx';
 import FieldOptionRadio from './FieldOptionRadio.jsx';
 import ButtonSmall from './ButtonSmall.jsx';
 import Label from './Label.jsx';
@@ -39,6 +40,7 @@ const FieldOptions = ({
                 {option}
                 {typeOptions[option].type && (
                   <span className="pl-2 opacity-50">
+                    {/* {typeOptions[option].type.split(':')[0]} */}
                     {typeOptions[option].type}
                   </span>
                 )}
@@ -137,10 +139,10 @@ const FieldOptions = ({
                     </div>
                   )}
 
-                  {/* Array's */}
+                  {/* Array's (of Fields) */}
                   {typeOptions[option].type === 'array' && (
                     <div className="flex flex-col">
-                      {/* parentId means we're editing an existing field */}
+                      {/* existence of parentId means we're editing an existing field */}
                       <FieldAdd
                         schema={parentId ? schema : childFields}
                         setSchema={parentId ? setSchema : setChildFields}
@@ -159,10 +161,22 @@ const FieldOptions = ({
                     </div>
                   )}
 
+                  {/* Array's of Strings */}
+                  {typeOptions[option].type === 'array:string' && (
+                    <div className="flex flex-col">
+                      <FieldOptionInputMulti
+                        name={option}
+                        type={typeOptions[option].type}
+                        placeholder={typeOptions[option].default}
+                        value={options[option] || ''}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  )}
+
                   {(typeOptions[option].type === 'function' ||
                     typeOptions[option].type === 'object' ||
-                    typeOptions[option].type === 'string:function' ||
-                    typeOptions[option].type === 'array:string') && (
+                    typeOptions[option].type === 'string:function') && (
                     <div className="bg-gray-200 text-gray-500 rounded text-sm p-2">
                       Not yet editable. Check back soon!
                     </div>

@@ -281,6 +281,7 @@ export const schemaTypes = {
       to: {
         required: true,
         type: 'array:string',
+        typeStructure: { type: 'value' },
         description:
           'Must contain an array naming all the types which may be referenced e.g. [{type: "person"}].',
       },

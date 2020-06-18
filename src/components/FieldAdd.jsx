@@ -72,8 +72,6 @@ const FieldAdd = ({
 
   // Set options for passed-in field
   useEffect(() => {
-    console.log(childFields);
-
     // Field is not set
     if (!field) return;
 
@@ -94,8 +92,6 @@ const FieldAdd = ({
 
     // Find the option keys this field *could* have and pass them in
     const fieldOptions = {};
-
-    console.log(childFields, type);
 
     // Add childFields from state, not form values
     if (childFields && childFields.length) {
@@ -163,6 +159,8 @@ const FieldAdd = ({
             // delete fieldOptions[inputName];
             break;
         }
+      } else if (schemaTypes[type].options[inputName].type === 'array:string') {
+        fieldOptions[inputName] = value;
       } else {
         fieldOptions[inputName] = value;
       }
@@ -179,15 +177,46 @@ const FieldAdd = ({
       setId(newId);
     }
 
+    // Some options in state need processing before feeding into schema
+    const fieldOptions = { ...options };
+
+    Object.keys(fieldOptions).forEach(oKey => {
+      const thisKeyOption = schemaTypes[type].options[oKey];
+      // Some types are arrays of strings or objects
+      if (thisKeyOption.type === 'array:string') {
+        if (!thisKeyOption.typeStructure) {
+          // Just an array of strings
+          fieldOptions[oKey] = fieldOptions[oKey]
+            .split(',')
+            .filter(toKey => toKey)
+            .map(toKey => toKey.trim());
+        } else {
+          // An array structured to the specs in schema
+          fieldOptions[oKey] = fieldOptions[oKey]
+            .split(',')
+            .filter(toKey => toKey)
+            .map(toKey => {
+              const newObject = {};
+              Object.keys(thisKeyOption.typeStructure).forEach(
+                structureKey => (newObject[structureKey] = toKey)
+              );
+
+              return newObject;
+            });
+        }
+      }
+    });
+
+    // Rack 'em up
     const thisField = {
       id: id || newId,
       title: formatTitle(name),
       name: formatName(name),
       type,
-      ...options,
+      ...fieldOptions,
     };
 
-    // Get child fields from state and move into the field
+    // Get child fields from state and add to the field
     if (childFields.length > 0) {
       if (schemaTypes[type].options.fields) {
         thisField.fields = childFields;
@@ -208,34 +237,11 @@ const FieldAdd = ({
     let currentSchema = schema.length ? [...schema] : []; // New array
     const thisField = getThisField();
 
-    // TODO: The below will add child fields to local state but does not save it to the parent field when added to schema
-    // New inner field, on new top level field
-    // Short circuit all other conditions
-    // `parentId` === 'not yet defined'
-    if (!field && parentId) {
-      const currentChildFields = [...childFields];
-      currentChildFields.push(thisField);
-      setChildFields(currentChildFields);
-      // setName('');
-      // setId('');
-      // return;
-    }
-
     // Adding new fields on the end of an array
     if (!parentId) {
       if (field) {
-        // TODO: This might be redundant, could just use `findFieldById()` for top level fields?
-        const fieldIndex = currentSchema.findIndex(
-          findField => findField.id === field.id
-        );
-
-        if (fieldIndex >= 0) {
-          // Updating existing top-level field
-          currentSchema[fieldIndex] = thisField;
-        } else {
-          // Updating existing inner field
-          currentSchema = findFieldById(currentSchema, id, thisField);
-        }
+        // Updating existing inner field
+        currentSchema = findFieldById(currentSchema, id, thisField);
       } else {
         // Writing a new field
         currentSchema.push(thisField);
@@ -316,9 +322,13 @@ const FieldAdd = ({
               : `px-4 pt-4`
           }`}
         >
-          <label htmlFor="name" className="w-3/5">
+          <label
+            htmlFor={parentId ? `${parentId}-name` : 'name'}
+            className="w-1/2"
+          >
             <Label className="mb-1">name</Label>
             <input
+              id={parentId ? `${parentId}-name` : 'name'}
               name="name"
               ref={refName}
               value={name}
@@ -326,9 +336,13 @@ const FieldAdd = ({
               className="input"
             />
           </label>
-          <label htmlFor="type" className="flex-1 pl-2">
+          <label
+            htmlFor={parentId ? `${parentId}-type` : 'type'}
+            className="flex-1 pl-2"
+          >
             <Label className="mb-1">type</Label>
             <select
+              id={parentId ? `${parentId}-type` : 'type'}
               name="type"
               ref={refType}
               value={type}
@@ -343,32 +357,26 @@ const FieldAdd = ({
             </select>
           </label>
 
-          <div className="flex items-center pl-2 mt-auto mb-1">
-            <div className="flex-shrink-0 flex flex-col items-center space-y-1">
-              <ButtonSmall
-                disabled={!schemaTypes[type].description}
-                color={descriptionVisible ? `green` : `purple`}
-                icon={descriptionVisible ? `x` : `info`}
-                onClick={() => setDescriptionVisible(!descriptionVisible)}
-              />
-              <ButtonSmall
-                disabled={!schemaTypes[type].description}
-                color={validationVisible ? `green` : `red`}
-                icon={validationVisible ? `x` : `exclamation`}
-                onClick={() => setValidationVisible(!validationVisible)}
-              />
-            </div>
-
-            <div className="pl-1 flex-shrink-0 flex flex-col items-center space-y-1">
-              <ButtonSmall
-                disabled={
-                  !name || !Object.keys(schemaTypes[type].options).length
-                }
-                color={optionsVisible ? `aqua` : `blue`}
-                icon={optionsVisible ? `x` : `sortDescending`}
-                onClick={() => setOptionsVisible(!optionsVisible)}
-              />
-            </div>
+          <div className="flex items-center pl-2 pb-4 space-x-1 mt-auto">
+            <ButtonSmall
+              disabled={!schemaTypes[type].description}
+              color={descriptionVisible ? `purple` : `purple`}
+              icon={descriptionVisible ? `x` : `info`}
+              className="rounded-full"
+              onClick={() => setDescriptionVisible(!descriptionVisible)}
+            />
+            <ButtonSmall
+              disabled={!schemaTypes[type].description}
+              color={validationVisible ? `red` : `red`}
+              icon={validationVisible ? `x` : `exclamation`}
+              onClick={() => setValidationVisible(!validationVisible)}
+            />
+            <ButtonSmall
+              disabled={!name || !Object.keys(schemaTypes[type].options).length}
+              color={optionsVisible ? `blue` : `blue`}
+              icon={optionsVisible ? `x` : `sortDescending`}
+              onClick={() => setOptionsVisible(!optionsVisible)}
+            />
           </div>
         </div>
 
