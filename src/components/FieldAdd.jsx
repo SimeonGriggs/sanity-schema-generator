@@ -349,21 +349,21 @@ const FieldAdd = ({
                 disabled={!schemaTypes[type].description}
                 color={descriptionVisible ? `green` : `purple`}
                 icon={descriptionVisible ? `x` : `info`}
-                // className="rounded-full"
                 onClick={() => setDescriptionVisible(!descriptionVisible)}
               />
               <ButtonSmall
                 disabled={!schemaTypes[type].description}
                 color={validationVisible ? `green` : `red`}
                 icon={validationVisible ? `x` : `exclamation`}
-                // className="rounded-full"
                 onClick={() => setValidationVisible(!validationVisible)}
               />
             </div>
 
             <div className="pl-1 flex-shrink-0 flex flex-col items-center space-y-1">
               <ButtonSmall
-                disabled={!Object.keys(schemaTypes[type].options).length}
+                disabled={
+                  !name || !Object.keys(schemaTypes[type].options).length
+                }
                 color={optionsVisible ? `aqua` : `blue`}
                 icon={optionsVisible ? `x` : `sortDescending`}
                 onClick={() => setOptionsVisible(!optionsVisible)}
@@ -433,7 +433,7 @@ const FieldAdd = ({
         </button>
       )}
 
-      {childFields && childFields.length > 0 && (
+      {parentId && childFields && childFields.length > 0 && (
         <div className="pt-2 bg-white rounded-b">
           <FieldList
             schema={childFields}
